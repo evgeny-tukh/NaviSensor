@@ -1,0 +1,190 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Исходные файлы">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Файлы заголовков">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Файлы ресурсов">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Исходные файлы\Wrappers">
+      <UniqueIdentifier>{67ed5021-abf9-4bca-9301-4c6a5cfb7e0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Wrappers">
+      <UniqueIdentifier>{db81761e-1493-47cd-aece-d44f2c8e1eb7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Windows">
+      <UniqueIdentifier>{c3ddcf0a-0b31-45ee-8568-364cb70a1519}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Windows">
+      <UniqueIdentifier>{4607f2f5-9fdb-41b0-a128-2e97c009c3fa}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Resource.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="ButtonWrapper.h">
+      <Filter>Файлы заголовков\Wrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="ComboBoxWrapper.h">
+      <Filter>Файлы заголовков\Wrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="DialogWrapper.h">
+      <Filter>Файлы заголовков\Wrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="EditWrapper.h">
+      <Filter>Файлы заголовков\Wrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="GenericControlWrapper.h">
+      <Filter>Файлы заголовков\Wrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="ListCtrlWrapper.h">
+      <Filter>Файлы заголовков\Wrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="TreeCtrlWrapper.h">
+      <Filter>Файлы заголовков\Wrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="UpDownWrapper.h">
+      <Filter>Файлы заголовков\Wrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowWrapper.h">
+      <Filter>Файлы заголовков\Wrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="SensorConfig.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Serialization.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="tools.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="ListBoxWrapper.h">
+      <Filter>Файлы заголовков\Wrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="FilePropsDlg.h">
+      <Filter>Файлы заголовков\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="InputBox.h">
+      <Filter>Файлы заголовков\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="NicSelectDlg.h">
+      <Filter>Файлы заголовков\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="SensorPropsDlg.h">
+      <Filter>Файлы заголовков\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="SerialPortPropsDlg.h">
+      <Filter>Файлы заголовков\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="UdpConnectionPropsDlg.h">
+      <Filter>Файлы заголовков\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="SensorInfoWnd.h">
+      <Filter>Файлы заголовков\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\NaviSensor\DataServer.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="NaviSensorUI.h">
+      <Filter>Файлы заголовков\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\NaviSensor\Socket.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ButtonWrapper.cpp">
+      <Filter>Исходные файлы\Wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="ComboBoxWrapper.cpp">
+      <Filter>Исходные файлы\Wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="DialogWrapper.cpp">
+      <Filter>Исходные файлы\Wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="EditWrapper.cpp">
+      <Filter>Исходные файлы\Wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="GenericControlWrapper.cpp">
+      <Filter>Исходные файлы\Wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="ListCtrlWrapper.cpp">
+      <Filter>Исходные файлы\Wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="TreeCtrlWrapper.cpp">
+      <Filter>Исходные файлы\Wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="UpDownWrapper.cpp">
+      <Filter>Исходные файлы\Wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowWrapper.cpp">
+      <Filter>Исходные файлы\Wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="SensorConfig.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Serialization.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Tools.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="ListBoxWrapper.cpp">
+      <Filter>Исходные файлы\Wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="FilePropsDlg.cpp">
+      <Filter>Исходные файлы\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="InputBox.cpp">
+      <Filter>Исходные файлы\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="NaviSensorUI.cpp">
+      <Filter>Исходные файлы\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="NicSelectDlg.cpp">
+      <Filter>Исходные файлы\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="SensorPropsDlg.cpp">
+      <Filter>Исходные файлы\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="SerialPortPropsDlg.cpp">
+      <Filter>Исходные файлы\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="UdpConnectionPropsDlg.cpp">
+      <Filter>Исходные файлы\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="SensorInfoWnd.cpp">
+      <Filter>Исходные файлы\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\NaviSensor\DataServer.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="..\NaviSensor\Socket.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="NaviSensorUI.rc">
+      <Filter>Файлы ресурсов</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="small.ico">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
+    <Image Include="NaviSensorUI.ico">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
+  </ItemGroup>
+</Project>
