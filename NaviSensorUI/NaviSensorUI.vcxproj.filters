@@ -93,13 +93,13 @@
     <ClInclude Include="SensorInfoWnd.h">
       <Filter>Файлы заголовков\Windows</Filter>
     </ClInclude>
-    <ClInclude Include="..\NaviSensor\DataServer.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="NaviSensorUI.h">
       <Filter>Файлы заголовков\Windows</Filter>
     </ClInclude>
     <ClInclude Include="..\NaviSensor\Socket.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="..\NaviSensor\Network.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
@@ -167,10 +167,10 @@
     <ClCompile Include="SensorInfoWnd.cpp">
       <Filter>Исходные файлы\Windows</Filter>
     </ClCompile>
-    <ClCompile Include="..\NaviSensor\DataServer.cpp">
+    <ClCompile Include="..\NaviSensor\Socket.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="..\NaviSensor\Socket.cpp">
+    <ClCompile Include="..\NaviSensor\Network.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>

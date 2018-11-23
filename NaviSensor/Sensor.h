@@ -39,6 +39,8 @@ namespace Sensors
 
             inline void setForwardCallback (ForwardCb cb) { forwardCb = cb; }
 
+            void enableRawDataSend (const bool enable, const unsigned int port = 0);
+
         protected:
             ForwardCb     forwardCb;
             bool          running, done;
@@ -80,6 +82,8 @@ namespace Sensors
 
             void wait ();
             bool allStopped ();
+
+            void enableRawDataSend (const unsigned int sensorID, const bool enable, const unsigned int port = 0);
 
             inline const bool isRunning () { return running; }
 

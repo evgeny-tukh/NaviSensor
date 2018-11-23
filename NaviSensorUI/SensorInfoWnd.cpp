@@ -3,12 +3,12 @@
 
 SensorInfoWnd::SensorInfoWnd (HINSTANCE instance, HWND parent, Sensors::SensorConfig *sensorCfg) :
         CDialogWrapper (instance, parent, IDD_SENSOR), sentences (IDC_SENTENCES), pause (IDC_PAUSE), terminal (IDC_TERMINAL),
-        dataClient (logicProcInternal, this)
+        dataNode ((const unsigned int) Comm::Ports::CmdPort, onMessageInternal, (void *) this)
 {
     this->sensorCfg = sensorCfg;
 }
 
-void SensorInfoWnd::logicProcInternal (Comm::CommCallback sendCb, Comm::CommCallback rcvCb, void *self)
+/*void SensorInfoWnd::logicProcInternal (Comm::CommCallback sendCb, Comm::CommCallback rcvCb, void *self)
 {
     if (self)
         ((SensorInfoWnd *) self)->logicProc (sendCb, rcvCb);
@@ -34,6 +34,21 @@ void SensorInfoWnd::logicProc (Comm::CommCallback sendCb, Comm::CommCallback rcv
 
     if (waitForAck (0))
     {
+    }
+}*/
+
+void SensorInfoWnd::onMessage(Comm::MsgType msgType, const char *data, const int size)
+{
+
+}
+
+void SensorInfoWnd::onMessageInternal (Comm::MsgType msgType, const char *data, const int size, void *param)
+{
+    if (param)
+    {
+        SensorInfoWnd *self = (SensorInfoWnd *) param;
+
+        self->onMessage (msgType, data, size);
     }
 }
 
@@ -111,8 +126,8 @@ BOOL SensorInfoWnd::OnInitDialog (WPARAM wParam, LPARAM lParam)
     CWindowWrapper::Show (SW_SHOW);
     CWindowWrapper::Update ();
 
-    if (!dataClient.connectTo ())
-        MessageBox ("Unable to connect to sensor thread", "Error", MB_ICONSTOP);
+    //if (!dataClient.connectTo ())
+    //    MessageBox ("Unable to connect to sensor thread", "Error", MB_ICONSTOP);
 
     return result;
 }

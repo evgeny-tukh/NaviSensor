@@ -128,6 +128,11 @@ void Sensors::Sensor::updateData (Data::DataType, void *data, const size_t size)
 
 }
 
+void Sensors::Sensor::enableRawDataSend (const bool enable, const unsigned int port)
+{
+
+}
+
 Sensors::SensorArray::SensorArray (SensorConfigArray *sensorConfigs)
 {
     this->running       = false;
@@ -264,6 +269,17 @@ void Sensors::SensorArray::setForwardCallback (const int sensorID, const Sensors
         if (sensor && sensor->getConfig ()->sensorID == sensorID)
         {
             sensor->setForwardCallback (cb); break;
+        }
+    }
+}
+
+void Sensors::SensorArray::enableRawDataSend (const unsigned int sensorID, const bool enable, const unsigned int port)
+{
+    for (auto & sensor : *this)
+    {
+        if (sensor && sensor->getConfig()->sensorID == sensorID)
+        {
+            sensor->enableRawDataSend (enable, port); break;
         }
     }
 }

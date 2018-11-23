@@ -156,7 +156,6 @@
     <ClCompile Include="..\NaviSensorUI\SensorConfig.cpp" />
     <ClCompile Include="..\NaviSensorUI\Tools.cpp" />
     <ClCompile Include="BinQueue.cpp" />
-    <ClCompile Include="DataServer.cpp" />
     <ClCompile Include="DataStorage.cpp" />
     <ClCompile Include="DBK.cpp" />
     <ClCompile Include="DBS.cpp" />
@@ -166,6 +165,7 @@
     <ClCompile Include="HDT.cpp" />
     <ClCompile Include="MWV.cpp" />
     <ClCompile Include="NaviSensor.cpp" />
+    <ClCompile Include="Network.cpp" />
     <ClCompile Include="NmeaSensor.h" />
     <ClCompile Include="Parameters.cpp" />
     <ClCompile Include="Parser.cpp" />
@@ -185,7 +185,6 @@
     <ClInclude Include="..\NaviSensorUI\tools.h" />
     <ClInclude Include="BinQueue.h" />
     <ClInclude Include="DataDef.h" />
-    <ClInclude Include="DataServer.h" />
     <ClInclude Include="DataStorage.h" />
     <ClInclude Include="DBK.h" />
     <ClInclude Include="DBS.h" />
@@ -194,6 +193,7 @@
     <ClInclude Include="GLL.h" />
     <ClInclude Include="HDT.h" />
     <ClInclude Include="MWV.h" />
+    <ClInclude Include="Network.h" />
     <ClInclude Include="Parameters.h" />
     <ClInclude Include="Parser.h" />
     <ClInclude Include="Reader.h" />
