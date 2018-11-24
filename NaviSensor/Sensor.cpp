@@ -57,6 +57,15 @@ void Sensors::Sensor::stop ()
     transmitter.close ();
 
     running = false;
+
+    if (terminal)
+    {
+        terminal->close ();
+
+        delete terminal;
+
+        terminal = 0;
+    }
 }
 
 void Sensors::Sensor::readerProcInternal (Sensor *sensor)

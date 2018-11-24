@@ -41,7 +41,7 @@ int CListCtrlWrapper::GetItemCount ()
     return SendMessage (LVM_GETITEMCOUNT);
 }
 
-int CListCtrlWrapper::AddItem (const char *pszText, LPARAM lParam)
+int CListCtrlWrapper::AddItem (const char *pszText, LPARAM lParam, const int nImage)
 {
     LVITEM lviItem;
     
@@ -52,10 +52,17 @@ int CListCtrlWrapper::AddItem (const char *pszText, LPARAM lParam)
     lviItem.pszText = (char *) pszText;
     lviItem.lParam  = lParam;
     
+    if (nImage >= 0)
+    {
+        lviItem.mask   |= LVIF_IMAGE;
+        lviItem.iImage  = nImage;
+        lviItem.iIndent = 1;
+    }
+
     return (int) SendMessage (LVM_INSERTITEM, 0, (LPARAM) & lviItem);
 }
 
-int CListCtrlWrapper::AddItemW (const WCHAR *pszText, LPARAM lParam)
+int CListCtrlWrapper::AddItemW (const WCHAR *pszText, LPARAM lParam, const int nImage)
 {
     LVITEMW lviItem;
 
@@ -65,6 +72,12 @@ int CListCtrlWrapper::AddItemW (const WCHAR *pszText, LPARAM lParam)
     lviItem.iItem   = 0xFFFF;
     lviItem.pszText = (WCHAR *)pszText;
     lviItem.lParam  = lParam;
+
+    if (nImage >= 0)
+    {
+        lviItem.mask  |= LVIF_IMAGE;
+        lviItem.iImage = 2;
+    }
 
     return (int) SendMessage (LVM_INSERTITEMW, 0, (LPARAM) & lviItem);
 }
