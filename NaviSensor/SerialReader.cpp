@@ -34,7 +34,7 @@ size_t Readers::SerialReader::read ()
     }
 
     if (bytesRead > 0)
-        queue.push (buffer, bytesRead);
+        queue.pushBuffer (buffer, bytesRead);
         
     return bytesRead;
 }

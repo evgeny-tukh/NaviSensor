@@ -28,7 +28,7 @@ namespace Sensors
 
             void terminate ();
 
-            virtual void readIteration ();
+            virtual bool readIteration ();
 
             inline const SensorConfig *getConfig () { return config; }
 
@@ -39,15 +39,21 @@ namespace Sensors
 
             inline void setForwardCallback (ForwardCb cb) { forwardCb = cb; }
 
+            inline bool isAlive () { return alive; }
+
+            void enableRawDataSend (const bool enable, const unsigned int port = 0);
+
         protected:
             ForwardCb     forwardCb;
-            bool          running, done;
+            bool          running, done, alive;
             Reader       *terminal;
             SensorConfig *config;
             std::thread   reader;
             std::thread   processor;
             std::mutex    locker;
             Comm::Socket  transmitter;
+            bool          sendRawData;
+            unsigned int  rawDataPort;
 
             void readerProc ();
             void processorProc ();
@@ -60,6 +66,58 @@ namespace Sensors
             virtual size_t extractData () { return 0; }
             virtual void processData (size_t size) {}
     };
+
+    #pragma pack(1)
+
+    struct _SensorState
+    {
+        int  id;
+        bool alive, running;
+    };
+
+    struct SensorState : public _SensorState
+    {
+        SensorState (const int id, const bool alive, const bool running)
+        {
+            this->id      = id;
+            this->alive   = alive;
+            this->running = running;
+        }
+
+        bool operator == (SensorState& another)
+        {
+            return id == another.id && alive == another.alive && running == another.running;
+        }
+
+        bool operator != (SensorState& another)
+        {
+            return id != another.id || alive != another.alive || running != another.running;
+        }
+    };
+
+    class SensorStateArray : public std::vector <SensorState>
+    {
+        public:
+            bool operator != (SensorStateArray& another)
+            {
+                bool result = size() != another.size();
+
+                if (!result)
+                {
+                    for (int i = 0, count = size (); i < count; ++i)
+                    {
+                        if (at(i) != another [i])
+                        {
+                            result = true; break;
+                        }
+                    }
+                }
+
+                return result;
+            }
+    };
+
+    #pragma pack()
 
     class SensorArray : public std::vector <Sensor *>
     {
@@ -81,7 +139,11 @@ namespace Sensors
             void wait ();
             bool allStopped ();
 
+            void enableRawDataSend (const unsigned int sensorID, const bool enable, const unsigned int port = 0);
+
             inline const bool isRunning () { return running; }
+
+            SensorStateArray& populateSensorStateArray (SensorStateArray&);
 
         protected:
             bool running;

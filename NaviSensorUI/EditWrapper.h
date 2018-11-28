@@ -11,6 +11,8 @@ class CEditWrapper : public CGenericControlWrapper
         void SetTextLimit (const int nLimit);
         void SetInt (const int nValue, const BOOL bSigned = FALSE);
         int GetInt (const BOOL bSigned = FALSE);
+
+        void AddText (const char *pszText, const int nMaxSize = 0);
 };
 
 class CIPAddrControlWrapper : public CEditWrapper

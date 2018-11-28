@@ -5,39 +5,41 @@ Readers::BinaryQueue::BinaryQueue ()
 
 }
 
-void Readers::BinaryQueue::push (ByteBuffer& data)
+void Readers::BinaryQueue::pushBuffer (ByteBuffer& data)
 {
     locker.lock ();
-    insert (end (), data.begin (), data.end ());
+    
+    for (ByteBuffer::iterator ref = data.begin (); ref != data.end (); ++ ref)
+        push (*ref);
+
     locker.unlock ();
 }
 
-void Readers::BinaryQueue::push (const byte *data, const size_t size)
+void Readers::BinaryQueue::pushBuffer (const byte *data, const size_t size)
 {
-    size_t curSize;
-
     locker.lock ();
 
-    curSize = this->size ();
+    for (size_t i = 0; i < size; ++ i)
+        push (data [i]);
 
-    insert (end (), size, 0);
-    memcpy (this->data () + curSize, data, size);
     locker.unlock ();
 }
 
 size_t Readers::BinaryQueue::pull (byte *buffer, const size_t size, const bool needLock)
 {
     size_t actualSize = this->size () >= size ? size : this->size ();
-    byte  *data;
 
     if (needLock)
         locker.lock ();
     
-    data = this->data ();
+    memset (buffer, 0, size);
 
-    memcpy (buffer, data, actualSize);
+    for (size_t i = 0; i < actualSize; ++ i)
+    {
+        buffer [i] = front ();
 
-    this->erase (begin (), begin () + (actualSize - 1));
+        pop ();
+    }
 
     if (needLock)
         locker.unlock ();
@@ -45,54 +47,66 @@ size_t Readers::BinaryQueue::pull (byte *buffer, const size_t size, const bool n
     return actualSize;
 }
 
-size_t Readers::BinaryQueue::pull (char *buffer, const size_t bufSize, const char *finish)
+size_t Readers::BinaryQueue::pull (char *buffer, const size_t bufSize, const char *finishAfterChars, const char *finishBeforeChars, const bool ignoreUnfinished)
 {
-    char  *data,
-          *endPos;
-    size_t actualSize, skippedBytes;
+    size_t actualSize = this->size () >= bufSize ? bufSize : this->size (),
+           queueSize  = size (),
+           start,
+           count;
+    bool   finishFound,
+           noCharsPassed;
 
     locker.lock ();
 
     memset (buffer, 0, bufSize);
 
-    data = (char *) this-> data ();
-
-    if (data)
+    for (finishFound = false, count = start = 0, noCharsPassed = true; !finishFound && count < queueSize && (count - start) < bufSize; ++ count)
     {
-        for (skippedBytes = 0; *data == '\r' || *data == '\n'; ++ skippedBytes, ++data);
+        char curChar = (char) c [count];
 
-        endPos = strstr (data, finish);
-
-        if (!endPos)
-            endPos = data + size ();
-
-        actualSize = endPos - data;
-
-        if (actualSize > bufSize)
-            actualSize = bufSize;
-
-        memcpy (buffer, data, actualSize);
-
-        if (endPos)
-            actualSize += strlen (finish);
-
-        if (begin () != end ())
+        if (curChar)
         {
-            size_t sizeToErase = skippedBytes + actualSize;
+            if (strchr (finishAfterChars, curChar) != 0)
+            {
+                if (noCharsPassed)
+                    ++ start;
+                else
+                    finishFound = true;
+            }
+            else if (strchr (finishBeforeChars, curChar) != 0)
+            {
+                if (noCharsPassed)
+                {
+                    noCharsPassed = false;
+                }
+                else
+                {
+                    -- count;
 
-            if (sizeToErase > this->size ())
-                sizeToErase = this->size ();
-                
-            if (sizeToErase > 0)
-                erase (begin (), begin () + sizeToErase);
+                    finishFound = true;
+                }
+            }
+            else
+            {
+                noCharsPassed = false;
+            }
         }
     }
-    else
+
+    if (count > 0)
     {
-        actualSize = 0;
+        for (size_t i = 0, j = 0; i < count; ++i)
+        {
+            if (start == 0)
+                buffer [j++] = (char) c.at (0);
+            else
+                -- start;
+
+            pop ();
+        }
     }
 
     locker.unlock ();
 
-    return actualSize;
+    return count;
 }
