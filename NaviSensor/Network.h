@@ -3,6 +3,7 @@
 #include <time.h>
 #include <thread>
 #include "Socket.h"
+#include "Sensor.h"
 
 namespace Comm
 {
@@ -40,9 +41,10 @@ namespace Comm
         unsigned char msgType;
     };
 
-    struct Heartbeat : GenericMsg
+    struct HeartbeatData : GenericMsg
     {
-        unsigned char daemonState;
+        unsigned char         daemonState, numOfSensors;
+        Sensors::_SensorState sensorState [1];
     };
 
     struct SensorsState : GenericMsg
@@ -93,6 +95,8 @@ namespace Comm
 
             void sendMessage (MsgType msgType, byte *data, const int dataSize, const unsigned int port, const char *destAddr = 0);
             unsigned int sendCommand (CmdType cmd, const unsigned int arg = 0, const unsigned int port = Ports::CmdPort, const char *destAddr = 0);
+            unsigned int sendCommand (CmdType cmd, const unsigned short arg1, const unsigned short arg2, const unsigned int port = Ports::CmdPort, const char *destAddr = 0);
+            unsigned int sendCommand (CmdType cmd, const unsigned char arg1, const unsigned char arg2, const unsigned short arg3, const unsigned int port = Ports::CmdPort, const char *destAddr = 0);
 
         protected:
             unsigned int port;

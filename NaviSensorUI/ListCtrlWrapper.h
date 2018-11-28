@@ -17,6 +17,7 @@ class CListCtrlWrapper : public CGenericControlWrapper
         void SetItemText (const int nItem, const int nColumn, const char *pszText);
         void SetItemTextW (const int nItem, const int nColumn, const WCHAR *pszText);
         void SetItemState (const int nItem, const int nStateMask, const int nState);
+        void SetItemImage (const int nItem, const int nImage);
         void SetItemData (const int nItem, const LPARAM lData);
         LPARAM GetItemData (const int nItem);
         void SetWholeLineSelection ();

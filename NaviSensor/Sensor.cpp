@@ -1,17 +1,27 @@
 #include <chrono>
+#include <iostream>
 #include "TextSensor.h"
 
 Sensors::Sensor::Sensor (SensorConfig *config) :
     forwardCb (0),
+    alive (false),
     done (false),
     running (false),
+    sendRawData (false),
     config (0),
+    rawDataPort (0),
     reader (readerProcInternal, this), 
     processor (processorProcInternal, this),
     locker ()
 {
     this->terminal = 0;
     this->config   = config;
+
+    setForwardCallback ([this] (const char *data, const int size) -> void
+                        {
+                            if (sendRawData)
+                                transmitter.sendTo (data, size, rawDataPort, "127.0.0.1");
+                        });
 }
 
 Sensors::Sensor::~Sensor ()
@@ -22,14 +32,17 @@ Sensors::Sensor::~Sensor ()
     terminate ();
 }
 
-void Sensors::Sensor::readIteration ()
+bool Sensors::Sensor::readIteration ()
 {
+    bool result = false;
+
     if (config)
     {
         if (terminal)
-            terminal->read ();
-        //printf ("%s\n", config->getName ());
+            result = terminal->read () > 0;
     }
+
+    return result;
 }
 
 void Sensors::Sensor::terminate ()
@@ -76,16 +89,28 @@ void Sensors::Sensor::readerProcInternal (Sensor *sensor)
 
 void Sensors::Sensor::readerProc ()
 {
+    time_t lastDataAt = 0, now;
+
     while (!done)
     {
         if (running && locker.try_lock ())
         {
-            readIteration ();
+            now = time (0);
+
+            if (readIteration ())
+            {
+                lastDataAt = time (0);
+                alive      = true;
+            }
+            else if ((now - lastDataAt) > 30)
+            {
+                alive = false;
+            }
 
             locker.unlock ();
         }
 
-        Tools::sleepFor (config ? config->pauseBtwIter : 100);
+        Tools::sleepFor (config ? config->pauseBtwIter : 10);
     }
 }
 
@@ -111,7 +136,7 @@ void Sensors::Sensor::processorProc ()
             }
         }
 
-        Tools::sleepFor (config ? config->pauseBtwIter : 100);
+        Tools::sleepFor (config ? config->pauseBtwIter : 10);
     }
 }
 
@@ -139,7 +164,8 @@ void Sensors::Sensor::updateData (Data::DataType, void *data, const size_t size)
 
 void Sensors::Sensor::enableRawDataSend (const bool enable, const unsigned int port)
 {
-
+    sendRawData = enable;
+    rawDataPort = port;
 }
 
 Sensors::SensorArray::SensorArray (SensorConfigArray *sensorConfigs)
@@ -186,6 +212,8 @@ void Sensors::SensorArray::startAll ()
     }
 
     running = true;
+
+    std::cout << "Started." << std::endl;
 }
 
 void Sensors::SensorArray::stopAll ()
@@ -197,6 +225,8 @@ void Sensors::SensorArray::stopAll ()
     }
 
     running = false;
+
+    std::cout << "Stopped." << std::endl;
 }
 
 void Sensors::SensorArray::deleteBySensorID (const int id, const bool removeCfgFile)
@@ -291,4 +321,21 @@ void Sensors::SensorArray::enableRawDataSend (const unsigned int sensorID, const
             sensor->enableRawDataSend (enable, port); break;
         }
     }
+}
+
+Sensors::SensorStateArray& Sensors::SensorArray::populateSensorStateArray (SensorStateArray& sensorStates)
+{
+    sensorStates.clear ();
+
+    for (auto & sensor : *this)
+    {
+        if (sensor)
+        {
+            SensorConfig *config = (SensorConfig *) sensor->getConfig ();
+
+            sensorStates.emplace_back (config->id (), sensor->isAlive (), sensor->isRunning ());
+        }
+    }
+
+    return sensorStates;
 }

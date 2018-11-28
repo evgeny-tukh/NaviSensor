@@ -101,6 +101,19 @@ void CListCtrlWrapper::SetItemState (const int nItem, const int nStateMask, cons
     SendMessage (LVM_SETITEMSTATE, nItem, (LPARAM) & lviItem);
 }
 
+void CListCtrlWrapper::SetItemImage (const int nItem, const int nImage)
+{
+    LVITEM lviItem;
+
+    memset (&lviItem, 0, sizeof (lviItem));
+
+    lviItem.mask   = LVIF_IMAGE;
+    lviItem.iItem  = nItem;
+    lviItem.iImage = nImage;
+
+    SendMessage (LVM_SETITEM, nItem, (LPARAM) & lviItem);
+}
+
 void CListCtrlWrapper::SetItemText (const int nItem, const int nColumn, const char *pszText)
 {
     LVITEM lviItem;

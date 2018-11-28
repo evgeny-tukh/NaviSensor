@@ -10,6 +10,21 @@ void CEditWrapper::SetTextLimit (const int nLimit)
     SendMessage (EM_SETLIMITTEXT, nLimit);
 }
 
+void CEditWrapper::AddText (const char *pszText, const int nMaxSize)
+{
+    int nTextSize = SendMessage (WM_GETTEXTLENGTH);
+
+    if (nMaxSize > 0 && nTextSize > nMaxSize)
+    {
+        SetText (pszText);
+    }
+    else
+    {
+        SendMessage (EM_SETSEL, nTextSize, nTextSize);
+        SendMessage (EM_REPLACESEL, 0, (LPARAM) pszText);
+    }
+}
+
 void CEditWrapper::SetInt (const int nValue, const BOOL bSigned)
 {
     SetDlgItemInt (m_hwndParent, m_uiControlID, nValue, bSigned);

@@ -36,6 +36,20 @@ void Comm::DataNode::sendMessage (MsgType msgType, byte *data, const int dataSiz
     sendTo ((const char *) buffer, msg.size, port, destAddr);
 }
 
+unsigned int Comm::DataNode::sendCommand (CmdType cmd, const unsigned char arg1, const unsigned char arg2, const unsigned short arg3, const unsigned int port, const char *destAddr)
+{
+    unsigned int arg = (((unsigned int) arg1) << 24) + (((unsigned int) arg2) << 16) + (unsigned int) arg3;
+
+    return sendCommand (cmd, arg, port, destAddr);
+}
+
+unsigned int Comm::DataNode::sendCommand (CmdType cmd, const unsigned short arg1, const unsigned short arg2, const unsigned int port, const char *destAddr)
+{
+    unsigned int arg = (((unsigned int) arg1) << 16) + (unsigned int) arg2;
+
+    return sendCommand (cmd, arg, port, destAddr);
+}
+
 unsigned int Comm::DataNode::sendCommand (CmdType cmd, const unsigned int arg, const unsigned int port, const char *destAddr)
 {
     static unsigned int seqNumber = 1;
