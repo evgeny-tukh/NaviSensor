@@ -19,7 +19,7 @@ namespace Tools
 
         while (getline (stream, line, separator))
         {
-            std::cout << line << std::endl;
+            //std::cout << line << std::endl;
 
             parts.push_back (line);
         }

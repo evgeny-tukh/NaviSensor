@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <queue>
 #include <mutex>
 
 namespace Readers
@@ -8,15 +9,15 @@ namespace Readers
     typedef unsigned char byte;
     typedef std::vector <byte> ByteBuffer;
 
-    class BinaryQueue : public ByteBuffer
+    class BinaryQueue : public std::queue <byte>
     {
         public:
             BinaryQueue ();
 
-            void push (ByteBuffer& data);
-            void push (const byte *data, const size_t size);
+            void pushBuffer (ByteBuffer& data);
+            void pushBuffer (const byte *data, const size_t size);
             size_t pull (byte *buffer, const size_t size, const bool needLock = true);
-            size_t pull (char *buffer, const size_t size, const char *eol);
+            size_t pull (char *buffer, const size_t size, const char *finishAfterChars, const char *finishBeforeChars, const bool ignoreUnfinished = true);
 
         protected:
             std::mutex locker;

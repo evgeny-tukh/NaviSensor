@@ -40,6 +40,16 @@ class CWindowWrapper
         {
             ::MoveWindow (m_hwndHandle, nX, nY, nWidth, nHeight, bRepaint);
         }
+
+        inline UINT IsDlgButtonChecked (const int nIDButton)
+        {
+            return ::IsDlgButtonChecked (m_hwndHandle, nIDButton);
+        }
+
+        inline BOOL CheckDlgButton (const int nIDButton, const UINT uiCheck)
+        {
+            return ::CheckDlgButton (m_hwndHandle, nIDButton, uiCheck);
+        }
         
     protected:
         ATOM      m_aClass;
