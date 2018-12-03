@@ -24,6 +24,7 @@ class CListCtrlWrapper : public CGenericControlWrapper
         int GetSelectedItem (void);
         int GetItemCount (void);
         int GetItemText (const int nItem, const int nColumn, char *pchBuffer, const int nSize);
+        int FindItem (const LPARAM lParam, const unsigned int uiFlags = LVFI_PARAM, const int nStart = -1);
         
         inline void SetExtendedStyle (const UINT uiMask, const UINT uiStyle) { SendMessage (LVM_SETEXTENDEDLISTVIEWSTYLE, uiMask, uiStyle); }
 };

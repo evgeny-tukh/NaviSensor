@@ -1,6 +1,8 @@
 #include <chrono>
 #include <iostream>
 #include "TextSensor.h"
+#include "Sentence.h"
+#include "Network.h"
 
 Sensors::Sensor::Sensor (SensorConfig *config) :
     forwardCb (0),
@@ -8,8 +10,10 @@ Sensors::Sensor::Sensor (SensorConfig *config) :
     done (false),
     running (false),
     sendRawData (false),
+    sendSentenceState (false),
     config (0),
     rawDataPort (0),
+    sentenceStatePort (0),
     reader (readerProcInternal, this), 
     processor (processorProcInternal, this),
     locker ()
@@ -20,7 +24,9 @@ Sensors::Sensor::Sensor (SensorConfig *config) :
     setForwardCallback ([this] (const char *data, const int size) -> void
                         {
                             if (sendRawData)
+                            {
                                 transmitter.sendTo (data, size, rawDataPort, "127.0.0.1");
+                            }
                         });
 }
 
@@ -127,6 +133,7 @@ void Sensors::Sensor::processorProc ()
         if (running)
         {
             size_t dataSize;
+            time_t lastSentenceStateSend = 0;
 
             while (dataSize = extractData (), dataSize > 0)
             {
@@ -136,8 +143,21 @@ void Sensors::Sensor::processorProc ()
             }
         }
 
-        Tools::sleepFor (config ? config->pauseBtwIter : 10);
+        Tools::sleepFor (config ? config->pauseBtwIter : 5);
     }
+}
+
+void Sensors::Sensor::sendSentenceStateData ()
+{
+    if (sendSentenceState && sentenceReg.size () > 0)
+    {
+        NMEA::SentenceStatusArray statuses;
+
+        sentenceReg.populate  (statuses);
+
+        transmitter.sendTo ((const char *) statuses.data (), statuses.size () * sizeof (NMEA::SentenceStatus), sentenceStatePort, "127.0.0.1");
+    }
+
 }
 
 Reader *Sensors::Sensor::createTerminal ()
@@ -166,6 +186,12 @@ void Sensors::Sensor::enableRawDataSend (const bool enable, const unsigned int p
 {
     sendRawData = enable;
     rawDataPort = port;
+}
+
+void Sensors::Sensor::enableSentenceStateSend (const bool enable, const unsigned int port)
+{
+    sendSentenceState = enable;
+    sentenceStatePort = port;
 }
 
 Sensors::SensorArray::SensorArray (SensorConfigArray *sensorConfigs)
@@ -319,6 +345,17 @@ void Sensors::SensorArray::enableRawDataSend (const unsigned int sensorID, const
         if (sensor && sensor->getConfig()->sensorID == sensorID)
         {
             sensor->enableRawDataSend (enable, port); break;
+        }
+    }
+}
+
+void Sensors::SensorArray::enableSentenceStateSend (const unsigned int sensorID, const bool enable, const unsigned int port)
+{
+    for (auto & sensor : *this)
+    {
+        if (sensor && sensor->getConfig()->sensorID == sensorID)
+        {
+            sensor->enableSentenceStateSend (enable, port); break;
         }
     }
 }

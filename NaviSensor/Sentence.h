@@ -1,15 +1,17 @@
 #pragma once
 
 #include "../NaviSensorUI/tools.h"
-#include "Sensor.h"
 #include <functional>
+#include <map>
 
 namespace NMEA
 {
     union SentenceType
     {
+        #pragma pack(1)
         char         name [4];
         unsigned int type;
+        #pragma pack()
 
         SentenceType ()
         {
@@ -52,5 +54,34 @@ namespace NMEA
             void parse (const char *source);
 
             bool checkCRC (const char *source);
+    };
+
+    #pragma pack(1)
+
+    struct SentenceStatus
+    {
+        SentenceType type;
+        time_t       lastReceived;
+        unsigned int count;
+
+        SentenceStatus (const char *source) : type (source)
+        {
+            lastReceived = 0;
+            count        = 0;
+        }
+    };
+
+    #pragma pack()
+
+    typedef std::vector <SentenceStatus> SentenceStatusArray;
+
+    class SentenceRegistry : public std::map <unsigned int, SentenceStatus>
+    {
+        public:
+            void update (const char *sentenceName);
+
+            SentenceStatus *findByName (const char *sentenceName);
+
+            void populate (SentenceStatusArray&);
     };
 }

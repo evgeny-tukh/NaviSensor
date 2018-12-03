@@ -9,10 +9,11 @@ namespace Comm
 {
     enum Ports
     {
-        CmdPort           = 8080,
-        SensorPort        = 9080,
-        RawDataFirstPort  = 7080,
-        ProcessedDataPort = 8001
+        CmdPort                = 8080,
+        SensorPort             = 9080,
+        RawDataFirstPort       = 7080,
+        SentenceStateFirstPort = 6080,
+        ProcessedDataPort      = 8001
     };
 
     enum MsgType
@@ -23,14 +24,16 @@ namespace Comm
         Nak           = 4,
         Sensors       = 5,
         RawData       = 6,
-        ProcessedData = 7
+        ProcessedData = 7,
+        SentenceList  = 8
     };
 
     enum CmdType
     {
-        Start      = 1,
-        Stop       = 2,
-        RawDataCtl = 3
+        Start           = 1,
+        Stop            = 2,
+        RawDataCtl      = 3,
+        SentenceListCtl = 4
     };
 
     #pragma pack(1)
@@ -69,9 +72,15 @@ namespace Comm
         unsigned int  seqNumber;
     };
 
-    struct RawData : GenericMsg
+    struct Raw : GenericMsg
     {
         char data [1];
+    };
+
+    struct SentenceList : GenericMsg
+    {
+        int                  numOfSentences;
+        NMEA::SentenceStatus sentenceStatus [1];
     };
 
     struct ProcessedData : GenericMsg

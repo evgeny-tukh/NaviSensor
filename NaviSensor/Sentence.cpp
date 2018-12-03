@@ -1,5 +1,5 @@
 #include <string>
-#include "Sentence.h"
+#include "Sensor.h"
 
 NMEA::Sentence::Sentence (const char *source)
 {
@@ -92,4 +92,33 @@ const char *NMEA::Sentence::getTypeName ()
 const int NMEA::Sentence::getType ()
 {
     return type.type;
+}
+
+void NMEA::SentenceRegistry::update (const char *sentenceName)
+{
+    SentenceType type (sentenceName);
+    iterator     pos = find (type.type);
+
+    if (pos == end ())
+        pos = insert (end (), std::pair <unsigned int, SentenceStatus> (type.type, SentenceStatus (sentenceName)));
+
+    pos->second.lastReceived = time (0);
+
+    pos->second.count ++;
+}
+
+NMEA::SentenceStatus *NMEA::SentenceRegistry::findByName (const char *sentenceName)
+{
+    SentenceType    type (sentenceName);
+    iterator        pos = find (type.type);
+
+    return pos == end () ? 0 : & pos->second;
+}
+
+void NMEA::SentenceRegistry::populate (SentenceStatusArray& sentences)
+{
+    sentences.clear ();
+
+    for (iterator pos = begin (); pos != end (); ++ pos)
+        sentences.emplace_back (pos->second);
 }
