@@ -1,6 +1,68 @@
 #include "DataStorage.h"
 #include "../NaviSensorUI//tools.h"
 
+Data::SensorDataStorage::SensorDataStorage (const int paramTimeout) : watchdog (watchdogProcInternal, this)
+{
+    this->paramTimeout = paramTimeout;
+    this->active       = true;
+}
+
+Data::SensorDataStorage::~SensorDataStorage ()
+{
+    active = false;
+
+    watchdog.join ();
+}
+
+void Data::SensorDataStorage::update (Parameter& param)
+{
+    iterator pos = find (param.type);
+
+    if (pos == end ())
+        pos = insert (end (), std::pair <DataType, Parameter *> (param.type, new Parameter));
+
+    pos->second->assign (param);
+}
+
+Data::Parameter *Data::SensorDataStorage::findParam (Data::DataType type)
+{
+    iterator pos = find (type);
+
+    return pos == end () ? 0 : pos->second;
+}
+
+void Data::SensorDataStorage::extractAll (Data::ParamArray& params)
+{
+    params.clear ();
+
+    for (iterator iter = begin (); iter != end (); ++iter)
+        params.push_back (iter->second);
+}
+
+void Data::SensorDataStorage::watchdogProc ()
+{
+    time_t now = time (0);
+
+    while (active)
+    {
+        for (iterator iter = begin (); iter != end (); ++ iter)
+        {
+            Parameter *param = iter->second;
+
+            if ((now - param->updateTime) > paramTimeout)
+                param->quality = Quality::Poor;
+        }
+
+        Tools::sleepFor (1000);
+    }
+}
+
+void Data::SensorDataStorage::watchdogProcInternal (Data::SensorDataStorage *self)
+{
+    if (self)
+        self->watchdogProc ();
+}
+
 Data::GlobalDataStorage::GlobalDataStorage (const int paramTimeout) : watchdog (watchdogProcInternal, this)
 {
     this->paramTimeout = paramTimeout;

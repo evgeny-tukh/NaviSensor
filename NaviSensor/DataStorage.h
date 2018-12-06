@@ -12,6 +12,26 @@ namespace Data
 
     typedef std::vector <Parameter *> ParamArray;
 
+    class SensorDataStorage : public std::map <DataType, Parameter *>
+    {
+        public:
+            SensorDataStorage (const int paramTimeout);
+            virtual ~SensorDataStorage ();
+
+            void update (Parameter& param);
+            Parameter *findParam (DataType type);
+
+            void extractAll (ParamArray& params);
+
+        protected:
+            int         paramTimeout;
+            bool        active;
+            std::thread watchdog;
+
+            void watchdogProc ();
+            static void watchdogProcInternal (SensorDataStorage *);
+    };
+
     class GlobalDataStorage : public std::map <DataType, ParamMap *>
     {
         public:

@@ -102,6 +102,12 @@
     <ClInclude Include="..\NaviSensor\Network.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="..\NaviSensor\Parameters.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="..\NaviSensor\Formatting.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ButtonWrapper.cpp">
@@ -171,6 +177,12 @@
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="..\NaviSensor\Network.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="..\NaviSensor\Parameters.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="..\NaviSensor\Formatting.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>

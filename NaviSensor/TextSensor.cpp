@@ -32,6 +32,10 @@ size_t Sensors::TextSensor::extractData ()
 
             if (Parsers::parsers.parse (sentence, this))
             {
+                sentenceReg.update (sentence.getTypeName ());
+
+                if (sendSentenceState)
+                    sendSentenceStateData ();
 
             }
         }

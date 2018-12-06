@@ -146,3 +146,10 @@ void Comm::Socket::readAll (ReadCb callback, bool *finish, void *param, const ch
         Tools::sleepFor (5);
     }
 }
+
+unsigned long Comm::Socket::getAvalDataSize ()
+{
+    unsigned long bytesAvailable;
+
+    return ioctlsocket (handle, FIONREAD, & bytesAvailable) == 0 ? bytesAvailable : 0;
+}

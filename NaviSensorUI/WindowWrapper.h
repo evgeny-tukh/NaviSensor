@@ -51,6 +51,16 @@ class CWindowWrapper
             return ::CheckDlgButton (m_hwndHandle, nIDButton, uiCheck);
         }
         
+        inline UINT_PTR SetTimer (UINT_PTR uiTimerID, UINT uiElapse, TIMERPROC pfnFunc = NULL)
+        {
+            return ::SetTimer (m_hwndHandle, uiTimerID, uiElapse, pfnFunc);
+        }
+
+        inline BOOL IsDialogBox ()
+        {
+            return m_bIsDialogBox;
+        }
+
     protected:
         ATOM      m_aClass;
         HWND      m_hwndHandle,
@@ -62,17 +72,20 @@ class CWindowWrapper
                   m_chClassName [100];
         UINT      m_uiBrush;
         DWORD     m_dwLastError;
+        BOOL      m_bIsDialogBox;
         
         virtual BOOL RegisterClass ();
                             
         static LRESULT CALLBACK WindowProc (HWND hwndHandle, UINT uiMessage, WPARAM wParam, LPARAM lParam);
 
         virtual LRESULT OnCreate (CREATESTRUCT *pData);
+        virtual LRESULT OnDestroy ();
         virtual LRESULT OnMessage (UINT uiMessage, WPARAM wParam, LPARAM lParam);
         virtual LRESULT OnCommand (WPARAM wParam, LPARAM lParam);
         virtual LRESULT OnSysCommand (WPARAM wParam, LPARAM lParam);
         virtual LRESULT OnSize (const DWORD dwRequestType, const WORD wWidth, const WORD wHeight);
         virtual LRESULT OnNotify (NMHDR *pHeader);
+        virtual LRESULT OnTimer (UINT uiTimerID);
         
     private:
         static CWindowWrapper *m_pInstances [MAX_INSTANCES];
@@ -81,4 +94,5 @@ class CWindowWrapper
         static void AddInstance (CWindowWrapper *pInstance);
         static void RemoveInstance (HWND hwndHandle);
         static CWindowWrapper *FindInstance (HWND hwndHandle, int *pnIndex = NULL);
+        static BOOL IsDialogMessage (MSG *pMessage);
 };

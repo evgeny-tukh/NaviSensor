@@ -1,5 +1,71 @@
 #include <time.h>
 #include "Parameters.h"
+#include "Formatting.h"
+
+const char *Data::getDataTypeName (const Data::DataType type)
+{
+    const char *result;
+
+    switch (type)
+    {
+        case DataType::Position:
+            result = "Pos"; break;
+
+        case DataType::UTC:
+            result = "UTC"; break;
+
+        case DataType::HDOP:
+            result = "HDOP"; break;
+
+        case DataType::TrueHeading:
+            result = "HDG"; break;
+
+        case DataType::Course:
+            result = "COG"; break;
+
+        case DataType::SpeedTW:
+            result = "STW"; break;
+
+        case DataType::SpeedOG:
+            result = "SOG"; break;
+
+        case DataType::RateOfTurn:
+            result = "ROT"; break;
+
+        case DataType::GPSQual:
+            result = "Quality"; break;
+
+        case DataType::PosSysMode:
+            result = "ModeInd"; break;
+
+        default:
+            result = "";
+    }
+
+    return result;
+}
+
+const char *Data::getDataQualityName (const Data::Quality quality)
+{
+    const char *result;
+
+    switch (quality)
+    {
+        case Quality::Good:
+            result = "Good"; break;
+
+        case Quality::Poor:
+            result = "Poor"; break;
+
+        case Quality::Suspicious:
+            result = "Susp"; break;
+
+        default:
+            result = "";
+    }
+
+    return result;
+}
 
 const size_t Data::getDataSize (const Data::DataType type)
 {
@@ -7,16 +73,22 @@ const size_t Data::getDataSize (const Data::DataType type)
 
     switch (type)
     {
-        case Data::Position:
-            size = sizeof (Data::Position); break;
+        case DataType::Position:
+            size = sizeof (Data::Pos); break;
 
         case DataType::UTC:
             size = sizeof (Data::Time); break;
 
         case DataType::HDOP:
+        case DataType::TrueHeading:
+        case DataType::Course:
+        case DataType::SpeedTW:
+        case DataType::SpeedOG:
+        case DataType::RateOfTurn:
             size = sizeof (float); break;
 
         case DataType::GPSQual:
+        case DataType::PosSysMode:
             size = sizeof (byte); break;
 
         default:
@@ -24,6 +96,110 @@ const size_t Data::getDataSize (const Data::DataType type)
     }
 
     return size;
+}
+
+const char *Data::getGPSQualityName (const GPSQuality quality)
+{
+    const char *result;
+
+    switch (quality)
+    {
+        case GPSQuality::InvalidFix:
+            result = "Fix Invalid"; break;
+
+        case GPSQuality::SPS:
+            result = "GPS SPS mode"; break;
+
+        case GPSQuality::Differential:
+            result = "Differential"; break;
+
+        case GPSQuality::PPS:
+            result = "GPS PPS mode"; break;
+
+        case GPSQuality::RTK:
+            result = "RTK"; break;
+
+        case GPSQuality::FloatRTK:
+            result = "Float RTK"; break;
+
+        case GPSQuality::Estimated:
+            result = "Estimated"; break;
+
+        case GPSQuality::Manual:
+            result = "Manual"; break;
+
+        case GPSQuality::Simulator:
+            result = "Simulator"; break;
+
+        default:
+            result = "";
+    }
+
+    return result;
+}
+
+const char *Data::getPosSysModeName (const PosSystemMode mode)
+{
+    const char *result;
+
+    switch (mode)
+    {
+        case PosSystemMode::Autonomous:
+            result = "Autonomous"; break;
+
+        case PosSystemMode::Diff:
+            result = "Differential"; break;
+
+        case PosSystemMode::Estim:
+            result = "Estimated"; break;
+
+        case PosSystemMode::Invalid:
+            result = "Invalid"; break;
+
+        case PosSystemMode::Man:
+            result = "Manual"; break;
+
+        case PosSystemMode::Simul:
+            result = "Simulator"; break;
+
+        default:
+            result = "";
+    }
+
+    return result;
+}
+
+char *Data::formatDataValueShort (const Data::Parameter& param, char *buffer, const size_t size)
+{
+    switch (param.type)
+    {
+        case DataType::Position:
+            Formatting::formatPosition ((Data::Pos *) param.data, buffer, size); break;
+
+        case DataType::UTC:
+            Formatting::formatUTC ((Data::Time *) param.data, buffer, size); break;
+
+        case DataType::HDOP:
+        case DataType::SpeedTW:
+        case DataType::SpeedOG:
+        case DataType::RateOfTurn:
+            snprintf (buffer, size, "%.1f", *((float *) param.data)); break;
+
+        case DataType::TrueHeading:
+        case DataType::Course:
+            snprintf (buffer, size, "%05.1f", *((float *) param.data)); break;
+
+        case DataType::GPSQual:
+            strncpy (buffer, getGPSQualityName ((Data::GPSQuality) ((byte *) param.data) [0]), size); break;
+
+        case DataType::PosSysMode:
+            strncpy (buffer, getPosSysModeName ((Data::PosSystemMode) ((char *) param.data) [0]), size); break;
+
+        default:
+            memset (buffer, 0, size);
+    }
+
+    return buffer;
 }
 
 Data::Parameter::Parameter ()
@@ -35,11 +211,19 @@ Data::Parameter::Parameter ()
     data       = 0;
 }
 
-Data::Parameter::Parameter (DataType type)
+Data::Parameter::Parameter (DataType paramType)
 {
-    size       = Data::getDataSize (type);
-    type       = type;
+    size       = Data::getDataSize (paramType);
+    type       = paramType;
     quality    = Quality::Poor;
+    updateTime = 0;
+    data       = (GenericData *) malloc (size);
+}
+
+Data::Parameter::Parameter (Data::ParamHeader& source)
+{
+    *((ParamHeader *) this) = source;
+
     updateTime = 0;
     data       = (GenericData *) malloc (size);
 }
@@ -63,11 +247,19 @@ void Data::Parameter::update (GenericData *source, Data::Quality sourceQuality)
 
 void Data::Parameter::assign (Parameter& source)
 {
-    size       = source.size;
+    if (size != source.size)
+    {
+        size = source.size;
+
+        if (data)
+            data = (GenericData *) realloc (data, size);
+        else
+            data = (GenericData *) malloc (size);
+    }
+
     type       = source.type;
     quality    = source.quality;
     updateTime = source.updateTime;
-    data       = (GenericData *) malloc (size);
 
     memcpy (data, source.data, size);
 }
