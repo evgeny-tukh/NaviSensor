@@ -23,6 +23,8 @@ namespace Comm
             void readAll (ReadCb callback, bool *finish, void *param = 0, const char *onlyFrom = 0);
             void listen (ReadCb callback, bool *finish, void *param = 0, const char *onlyFrom = 0);
 
+            unsigned long getAvalDataSize ();
+
         protected:
             SOCKET handle;
     };

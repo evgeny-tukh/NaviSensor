@@ -160,6 +160,7 @@
     <ClCompile Include="DBK.cpp" />
     <ClCompile Include="DBS.cpp" />
     <ClCompile Include="DBT.cpp" />
+    <ClCompile Include="Formatting.cpp" />
     <ClCompile Include="GGA.cpp" />
     <ClCompile Include="GLL.cpp" />
     <ClCompile Include="HDT.cpp" />
@@ -189,6 +190,7 @@
     <ClInclude Include="DBK.h" />
     <ClInclude Include="DBS.h" />
     <ClInclude Include="DBT.h" />
+    <ClInclude Include="Formatting.h" />
     <ClInclude Include="GGA.h" />
     <ClInclude Include="GLL.h" />
     <ClInclude Include="HDT.h" />

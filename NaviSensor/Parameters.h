@@ -43,16 +43,44 @@ namespace Data
         Simulator    = 8
     };
 
-    struct Parameter
+    enum PosSystemMode
     {
-        size_t       size;
-        DataType     type;
-        Quality      quality;
+        Autonomous   = 'A',
+        Diff         = 'D',
+        Estim        = 'E',
+        Man          = 'M',
+        Simul        = 'S',
+        Invalid      = 'N'
+    };
+
+    #pragma pack(1)
+
+    struct ParamHeader
+    {
+        size_t   size;
+        DataType type;
+        Quality  quality;
+
+        ParamHeader& operator = (ParamHeader& source)
+        {
+            this->size    = source.size;
+            this->quality = source.quality;
+            this->type    = source.type;
+
+            return *this;
+        }
+    };
+
+    #pragma pack()
+
+    struct Parameter : ParamHeader
+    {
         time_t       updateTime;
         GenericData *data;
 
         Parameter ();
         Parameter (DataType);
+        Parameter (ParamHeader&);
         ~Parameter ();
 
         void update (GenericData *, Data::Quality sourceQualily = Data::Quality::Good);
@@ -62,6 +90,18 @@ namespace Data
     };
 
     typedef std::pair <DataType, Parameter *> DataItem;
+
+    class DataBuffer : public std::vector <unsigned char>
+    {
+        public:
+            void addData (void *data, const size_t size)
+            {
+                unsigned char *byteData = (unsigned char *) data;
+
+                for (size_t i = 0; i < size; ++ i)
+                    push_back (byteData [i]);
+            }
+    };
 
     class DataStorage : public std::map <DataType, Parameter *>
     {
@@ -81,4 +121,11 @@ namespace Data
     };
 
     const size_t getDataSize (const DataType);
+    const char *getDataTypeName (const Data::DataType);
+    const char *getDataQualityName (const Data::Quality);
+
+    const char *getGPSQualityName (const GPSQuality quality);
+    const char *getPosSysModeName (const PosSystemMode mode);
+
+    char *formatDataValueShort (const Data::Parameter& param, char *buffer, const size_t size);
 }

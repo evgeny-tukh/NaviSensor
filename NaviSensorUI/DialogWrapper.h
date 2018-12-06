@@ -23,7 +23,7 @@ class CDialogWrapper : public CWindowWrapper
         UINT m_uiResourceID;
         BOOL m_bInitialized;
                 
-        static INT_PTR CALLBACK DialogProc (HWND hwndHandle, UINT uiMessage, WPARAM wParam, LPARAM lParam);
+        static BOOL CALLBACK DialogProc (HWND hwndHandle, UINT uiMessage, WPARAM wParam, LPARAM lParam);
 
         virtual BOOL OnInitDialog (WPARAM wParam, LPARAM lParam);
         

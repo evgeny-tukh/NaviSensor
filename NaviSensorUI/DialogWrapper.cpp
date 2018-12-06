@@ -5,6 +5,7 @@
 
 CDialogWrapper::CDialogWrapper (HINSTANCE hInstance, HWND hwndParent, const UINT uiResourceID) : CWindowWrapper (hInstance, hwndParent, NULL, NULL, NULL, NULL, NULL)
 {
+    m_bIsDialogBox = TRUE;
     m_hwndHandle   = NULL;
     m_uiResourceID = uiResourceID;
 }
@@ -22,7 +23,7 @@ INT_PTR CALLBACK ModelessDialogProc (HWND hwndHandle, UINT uiMessage, WPARAM wPa
     return uiMessage == WM_INITDIALOG;
 }
 
-INT_PTR CALLBACK CDialogWrapper::DialogProc (HWND hwndHandle, UINT uiMessage, WPARAM wParam, LPARAM lParam)
+BOOL CALLBACK CDialogWrapper::DialogProc (HWND hwndHandle, UINT uiMessage, WPARAM wParam, LPARAM lParam)
 {
     INT_PTR lResult = CWindowWrapper::WindowProc (hwndHandle, uiMessage, wParam, lParam);
 
@@ -37,10 +38,10 @@ BOOL CDialogWrapper::EndDialog (const int nCode)
 
 void CDialogWrapper::Show ()
 {
-    CreateDialogParam (NULL, MAKEINTRESOURCE (m_uiResourceID), m_hwndParent, DialogProc, (LPARAM) this);
+    m_hwndHandle = CreateDialogParam (m_hInstance, MAKEINTRESOURCE (m_uiResourceID), m_hwndParent, DialogProc, (LPARAM) this);
 
     ShowWindow (m_hwndHandle, SW_SHOW);
-    UpdateWindow (m_hwndHandle);
+    //UpdateWindow (m_hwndHandle);
 }
 
 BOOL CDialogWrapper::Execute ()
@@ -54,6 +55,9 @@ LRESULT CDialogWrapper::OnMessage (UINT uiMessage, WPARAM wParam, LPARAM lParam)
     
     switch (uiMessage)
     {
+        case WM_TIMER:
+            lResult = OnTimer (wParam); break;
+
         case WM_INITDIALOG:
             lResult = OnInitDialog (wParam, lParam); break;            
 

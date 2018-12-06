@@ -195,3 +195,19 @@ void CListCtrlWrapper::SetItemData (const int nItem, const LPARAM lData)
     
     SendMessage (LVM_SETITEM, nItem, (LPARAM) & lviItem);
 }
+
+int CListCtrlWrapper::FindItem (const LPARAM lParam, const unsigned int uiFlags, const int nStart)
+{
+    LV_FINDINFO fiInfo;
+
+    memset (& fiInfo, 0, sizeof (fiInfo));
+
+    fiInfo.flags = uiFlags;
+
+    if (uiFlags & LVFI_STRING)
+        fiInfo.psz = (const char *) lParam;
+    else
+        fiInfo.lParam = lParam;
+
+    return SendMessage (LVM_FINDITEM, nStart, (LPARAM) & fiInfo);
+}

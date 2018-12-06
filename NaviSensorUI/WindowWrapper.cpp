@@ -12,28 +12,30 @@ CWindowWrapper::CWindowWrapper (HINSTANCE hInstance, HWND hwndParent, const char
     if (pszClassName != NULL)
         strncpy (m_chClassName, pszClassName, sizeof (m_chClassName));
 
-    m_dwLastError = 0;    
-    m_hwndParent  = hwndParent;
-    m_hInstance   = hInstance;
-    m_hwndHandle  = NULL;
-    m_hmnuMenu    = hmnuMenu;
-    m_pszIcon     = (char *) pszIcon;
-    m_pszCursor   = (char *) pszCursor;
-    m_uiBrush     = uiBrush;
-    m_aClass      = pszClassName ? RegisterClass () : 0;
+    m_bIsDialogBox = FALSE;
+    m_dwLastError  = 0;    
+    m_hwndParent   = hwndParent;
+    m_hInstance    = hInstance;
+    m_hwndHandle   = NULL;
+    m_hmnuMenu     = hmnuMenu;
+    m_pszIcon      = (char *) pszIcon;
+    m_pszCursor    = (char *) pszCursor;
+    m_uiBrush      = uiBrush;
+    m_aClass       = pszClassName ? RegisterClass () : 0;
 }
 
 CWindowWrapper::CWindowWrapper (HWND hwndParent, UINT uiControlID)
 {
     memset (m_chClassName, 0, sizeof (m_chClassName));
 
-    m_dwLastError = 0;    
-    m_hwndParent  = hwndParent;
-    m_hwndHandle  = GetDlgItem (hwndParent, uiControlID); // May be yet NULL
-    m_pszIcon     = NULL;
-    m_pszCursor   = NULL;
-    m_uiBrush     = NULL;
-    m_hmnuMenu    = (HMENU) uiControlID;
+    m_bIsDialogBox = FALSE;
+    m_dwLastError  = 0;    
+    m_hwndParent   = hwndParent;
+    m_hwndHandle   = GetDlgItem (hwndParent, uiControlID); // May be yet NULL
+    m_pszIcon      = NULL;
+    m_pszCursor    = NULL;
+    m_uiBrush      = NULL;
+    m_hmnuMenu     = (HMENU) uiControlID;
     
     if (m_hwndHandle == NULL)
     {
@@ -102,7 +104,15 @@ LRESULT CALLBACK CWindowWrapper::WindowProc (HWND hwndHandle, UINT uiMessage, WP
     pInstance = FindInstance (hwndHandle);
 
     if (pInstance == NULL)
-        return DefWindowProc (hwndHandle, uiMessage, wParam, lParam);
+        pInstance = (CWindowWrapper *) GetWindowLong (hwndHandle, GWL_USERDATA);
+
+    if (pInstance == NULL)
+    {
+        if (GetWindowLong (hwndHandle, DWL_DLGPROC) != NULL)
+            return uiMessage == WM_INITDIALOG;
+        else
+            return DefWindowProc (hwndHandle, uiMessage, wParam, lParam);
+    }
 
     if (pInstance == NULL && m_nInstCount > 0)
     {
@@ -150,11 +160,16 @@ LRESULT CWindowWrapper::OnMessage (UINT uiMessage, WPARAM wParam, LPARAM lParam)
         case WM_SYSCOMMAND:
             lResult = OnSysCommand (wParam, lParam); break;
             
+        case WM_TIMER:
+            lResult = OnTimer(wParam); break;
+
         case WM_DESTROY:
+            OnDestroy ();
+
             RemoveInstance (m_hwndHandle);
-           
+
         default:
-            lResult = DefWindowProc (m_hwndHandle, uiMessage, wParam, lParam);
+            lResult = m_bIsDialogBox ? 0 : DefWindowProc (m_hwndHandle, uiMessage, wParam, lParam);
     }
     
     return lResult;
@@ -170,6 +185,11 @@ LRESULT CWindowWrapper::OnSize (const DWORD dwRequestType, const WORD wX, const 
     return TRUE;
 }
 
+LRESULT CWindowWrapper::OnDestroy ()
+{
+    return FALSE;
+}
+
 LRESULT CWindowWrapper::OnCommand (WPARAM wParam, LPARAM lParam)
 {
     return TRUE;
@@ -178,6 +198,11 @@ LRESULT CWindowWrapper::OnCommand (WPARAM wParam, LPARAM lParam)
 LRESULT CWindowWrapper::OnCreate (CREATESTRUCT *pData)
 {
     return FALSE;
+}
+
+LRESULT CWindowWrapper::OnTimer (UINT uiTimerID)
+{
+    return DefWindowProc(m_hwndHandle, WM_TIMER, uiTimerID, 0);
 }
 
 LRESULT CWindowWrapper::OnSysCommand (WPARAM wParam, LPARAM lParam)
@@ -236,8 +261,11 @@ void CWindowWrapper::MessageLoop ()
     
     while (GetMessage (& msgMessage, NULL, NULL, NULL))
     {
-        TranslateMessage (& msgMessage);
-        DispatchMessage (& msgMessage);
+        if (!IsDialogMessage (& msgMessage))
+        {
+            TranslateMessage (& msgMessage);
+            DispatchMessage (& msgMessage);
+        }
     }
 }
 
@@ -261,3 +289,19 @@ void CWindowWrapper::SetText (const char *pszString)
     SetWindowText (m_hwndHandle, pszString);
 }
 
+BOOL CWindowWrapper::IsDialogMessage (MSG *pMessage)
+{
+    BOOL            bResult;
+    CWindowWrapper *pInstance;
+    int             i;
+
+    for (i = 0, bResult = FALSE; i < m_nInstCount && !bResult ; ++ i)
+    {
+        pInstance = m_pInstances [i];
+
+        if (pInstance->IsDialogBox () && ::IsDialogMessage (pInstance->GetHandle (), pMessage))
+            bResult = TRUE;
+    }
+
+    return bResult;
+}
