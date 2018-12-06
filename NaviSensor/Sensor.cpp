@@ -10,12 +10,15 @@ Sensors::Sensor::Sensor (SensorConfig *config) :
     done (false),
     running (false),
     sendRawData (false),
+    sendProcessedData (false),
     sendSentenceState (false),
     config (0),
     rawDataPort (0),
+    processedDataPort (0),
     sentenceStatePort (0),
     reader (readerProcInternal, this), 
     processor (processorProcInternal, this),
+    dataStorage (30),
     locker ()
 {
     this->terminal = 0;
@@ -126,6 +129,25 @@ void Sensors::Sensor::processorProcInternal (Sensor *sensor)
         sensor->processorProc ();
 }
 
+void Sensors::Sensor::forwardProcessedData ()
+{
+    Data::ParamArray   params;
+    Data::DataBuffer   buffer;
+    //byte             buffer [2000];
+    //size_t           offset = 0;
+
+    dataStorage.extractAll (params);
+
+    for (auto & param : params)
+    {
+        //Data::ParamHeader *dest = (Data::ParamHeader *) (buffer + offset);
+        buffer.addData (param, sizeof (Data::ParamHeader));
+        buffer.addData (param->data, param->size);
+    }
+
+    transmitter.sendTo ((const char *) buffer.data (), buffer.size (), processedDataPort, "127.0.0.1");
+}
+
 void Sensors::Sensor::processorProc ()
 {
     while (!done)
@@ -133,13 +155,25 @@ void Sensors::Sensor::processorProc ()
         if (running)
         {
             size_t dataSize;
-            time_t lastSentenceStateSend = 0;
+            time_t lastProcessedDataSend = 0;
 
             while (dataSize = extractData (), dataSize > 0)
             {
                 processData (dataSize);
 
-                Tools::sleepFor (5);
+                if (sendProcessedData)
+                {
+                    time_t now = time (0);
+
+                    if (now > lastProcessedDataSend)
+                    {
+                        forwardProcessedData ();
+
+                        lastProcessedDataSend = now;
+                    }
+                }
+
+                Tools::sleepFor(5);
             }
         }
 
@@ -177,15 +211,25 @@ Reader *Sensors::Sensor::createTerminal ()
     return terminal;
 }
 
-void Sensors::Sensor::updateData (Data::DataType, void *data, const size_t size)
+void Sensors::Sensor::updateData (Data::DataType dataType, void *data, const size_t size)
 {
+    Data::Parameter param (dataType);
 
+    param.update ((Data::GenericData *) data);
+
+    dataStorage.update (param);
 }
 
 void Sensors::Sensor::enableRawDataSend (const bool enable, const unsigned int port)
 {
     sendRawData = enable;
     rawDataPort = port;
+}
+
+void Sensors::Sensor::enableProcessedDataSend (const bool enable, const unsigned int port)
+{
+    sendProcessedData = enable;
+    processedDataPort = port;
 }
 
 void Sensors::Sensor::enableSentenceStateSend (const bool enable, const unsigned int port)
@@ -345,6 +389,17 @@ void Sensors::SensorArray::enableRawDataSend (const unsigned int sensorID, const
         if (sensor && sensor->getConfig()->sensorID == sensorID)
         {
             sensor->enableRawDataSend (enable, port); break;
+        }
+    }
+}
+
+void Sensors::SensorArray::enableProcessedDataSend (const unsigned int sensorID, const bool enable, const unsigned int port)
+{
+    for (auto & sensor : *this)
+    {
+        if (sensor && sensor->getConfig ()->sensorID == sensorID)
+        {
+            sensor->enableProcessedDataSend (enable, port); break;
         }
     }
 }

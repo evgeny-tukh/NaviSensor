@@ -13,6 +13,7 @@ namespace Comm
         SensorPort             = 9080,
         RawDataFirstPort       = 7080,
         SentenceStateFirstPort = 6080,
+        ProcessedDataFirstPort = 5080,
         ProcessedDataPort      = 8001
     };
 
@@ -30,10 +31,11 @@ namespace Comm
 
     enum CmdType
     {
-        Start           = 1,
-        Stop            = 2,
-        RawDataCtl      = 3,
-        SentenceListCtl = 4
+        Start            = 1,
+        Stop             = 2,
+        RawDataCtl       = 3,
+        SentenceListCtl  = 4,
+        ProcessedDataCtl = 5
     };
 
     #pragma pack(1)

@@ -7,6 +7,7 @@
 #include "SerialReader.h"
 #include "Parameters.h"
 #include "Socket.h"
+#include "DataStorage.h"
 
 #include "../NaviSensorUI/SensorConfig.h"
 
@@ -45,20 +46,22 @@ namespace Sensors
             inline bool isAlive () { return alive; }
 
             void enableRawDataSend (const bool enable, const unsigned int port = 0);
+            void enableProcessedDataSend (const bool enable, const unsigned int port = 0);
             void enableSentenceStateSend (const bool enable, const unsigned int port = 0);
 
         protected:
-            ForwardCb              forwardCb;
-            bool                   running, done, alive;
-            Reader                *terminal;
-            SensorConfig          *config;
-            std::thread            reader;
-            std::thread            processor;
-            std::mutex             locker;
-            Comm::Socket           transmitter;
-            bool                   sendRawData, sendSentenceState;
-            unsigned int           rawDataPort, sentenceStatePort;
-            NMEA::SentenceRegistry sentenceReg;
+            ForwardCb               forwardCb;
+            bool                    running, done, alive;
+            Reader                 *terminal;
+            SensorConfig           *config;
+            std::thread             reader;
+            std::thread             processor;
+            std::mutex              locker;
+            Comm::Socket            transmitter;
+            bool                    sendRawData, sendProcessedData, sendSentenceState;
+            unsigned int            rawDataPort, processedDataPort, sentenceStatePort;
+            NMEA::SentenceRegistry  sentenceReg;
+            Data::SensorDataStorage dataStorage;
 
             void readerProc ();
             void processorProc ();
@@ -72,6 +75,7 @@ namespace Sensors
             virtual void processData (size_t size) {}
 
             void sendSentenceStateData ();
+            void forwardProcessedData ();
     };
 
     #pragma pack(1)
@@ -147,6 +151,7 @@ namespace Sensors
             bool allStopped ();
 
             void enableRawDataSend (const unsigned int sensorID, const bool enable, const unsigned int port = 0);
+            void enableProcessedDataSend (const unsigned int sensorID, const bool enable, const unsigned int port = 0);
             void enableSentenceStateSend (const unsigned int sensorID, const bool enable, const unsigned int port = 0);
 
             inline const bool isRunning () { return running; }
