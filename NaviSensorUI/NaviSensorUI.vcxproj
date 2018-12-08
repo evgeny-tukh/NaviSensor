@@ -160,6 +160,7 @@
     <ClInclude Include="ComboBoxWrapper.h" />
     <ClInclude Include="FilePropsDlg.h" />
     <ClInclude Include="ListBoxWrapper.h" />
+    <ClInclude Include="LocalListener.h" />
     <ClInclude Include="NicSelectDlg.h" />
     <ClInclude Include="SensorConfig.h" />
     <ClInclude Include="DialogWrapper.h" />
@@ -194,6 +195,7 @@
     <ClCompile Include="InputBox.cpp" />
     <ClCompile Include="ListBoxWrapper.cpp" />
     <ClCompile Include="ListCtrlWrapper.cpp" />
+    <ClCompile Include="LocalListener.cpp" />
     <ClCompile Include="NaviSensorUI.cpp" />
     <ClCompile Include="NicSelectDlg.cpp" />
     <ClCompile Include="SensorConfig.cpp" />

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <map>
+#include <mutex>
 #include "../NaviSensorUI//tools.h"
 #include "DataDef.h"
 
@@ -61,6 +62,30 @@ namespace Data
         DataType type;
         Quality  quality;
 
+        ParamHeader ()
+        {
+            size    = 0;
+            type    = DataType::Unknown;
+            quality = Quality::Poor;
+        }
+
+        ParamHeader (ParamHeader& source)
+        {
+            *this = source;
+        }
+
+        ParamHeader (ParamHeader *source)
+        {
+            *this = *source;
+        }
+
+        ParamHeader (size_t size, DataType type, Quality quality)
+        {
+            this->size    = size;
+            this->type    = type;
+            this->quality = quality;
+        }
+
         ParamHeader& operator = (ParamHeader& source)
         {
             this->size    = source.size;
@@ -69,9 +94,9 @@ namespace Data
 
             return *this;
         }
-    };
 
-    #pragma pack()
+        struct Parameter;
+    };
 
     struct Parameter : ParamHeader
     {
@@ -81,13 +106,88 @@ namespace Data
         Parameter ();
         Parameter (DataType);
         Parameter (ParamHeader&);
-        ~Parameter ();
+        virtual ~Parameter ();
 
         void update (GenericData *, Data::Quality sourceQualily = Data::Quality::Good);
         void update (GenericData&, Data::Quality sourceQualily = Data::Quality::Good);
 
         void assign (Parameter& source);
+
+        const ParamHeader& getHeader ()
+        {
+            return *((ParamHeader *) this);
+        }
     };
+
+    struct LANParamHeader : ParamHeader
+    {
+        unsigned char sensorID;
+        char          sensorName [20];
+
+        LANParamHeader () : ParamHeader ()
+        {
+            sensorID = 0;
+            
+            memset (sensorName, 0, sizeof (sensorName));
+        }
+
+        LANParamHeader (ParamHeader& source, const int sensorID = 0, const char *sensorName = 0) : ParamHeader (source)
+        {
+            this->sensorID = sensorID;
+
+            if (sensorName)
+                strncpy (this->sensorName, sensorName, sizeof (this->sensorName));
+            else
+                memset (this->sensorName, 0, sizeof (this->sensorName));
+        }
+
+        LANParamHeader (LANParamHeader& source) : ParamHeader()
+        {
+            *this = source;
+        }
+    };
+
+    struct GlobalParameter : Parameter
+    {
+        int sensorID;
+
+        GlobalParameter ();
+        GlobalParameter (const int);
+        GlobalParameter (const int, DataType);
+        GlobalParameter (const int, Parameter&);
+    };
+
+    struct ReceivedParameter : GlobalParameter
+    {
+        char sensorName [20];
+    };
+
+    struct DisplParam : Parameter
+    {
+        DisplParam (Parameter& param)
+        {
+            assign (param);
+
+            item = -1;
+        }
+
+        int item;
+    };
+
+    #pragma pack()
+
+    class DisplayedParams : public std::map <DataType, DisplParam>
+    {
+        public:
+            void checkAdd (Parameter&);
+
+            inline void lock () { locker.lock (); }
+            inline void unlock () { locker.unlock (); }
+
+        protected:
+            std::mutex locker;
+    };
+
 
     typedef std::pair <DataType, Parameter *> DataItem;
 
@@ -100,6 +200,20 @@ namespace Data
 
                 for (size_t i = 0; i < size; ++ i)
                     push_back (byteData [i]);
+            }
+
+            void addString (const char *data, const size_t size)
+            {
+                size_t i;
+                bool   eolPassed;
+
+                for (i = 0, eolPassed = false; i < size; ++ i)
+                {
+                    if (!eolPassed && !(data [i]))
+                        eolPassed = true;
+
+                    push_back (eolPassed ? '\0' : data [i]);
+                }
             }
     };
 

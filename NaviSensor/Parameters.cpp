@@ -272,6 +272,26 @@ void Data::Parameter::update (GenericData& source, Data::Quality sourceQuality)
     memcpy (data, & source, size);
 }
 
+Data::GlobalParameter::GlobalParameter () : Data::Parameter ()
+{
+    this->sensorID = 0;
+}
+
+Data::GlobalParameter::GlobalParameter (const int sensorID) : Data::Parameter ()
+{
+    this->sensorID = sensorID;
+}
+
+Data::GlobalParameter::GlobalParameter (const int sensorID, DataType type) : Data::Parameter (type)
+{
+    this->sensorID = sensorID;
+}
+
+Data::GlobalParameter::GlobalParameter (const int sensorID, Parameter& source) : Data::Parameter (source)
+{
+    this->sensorID = sensorID;
+}
+
 Data::DataStorage::DataStorage (const time_t timeout)
 {
     this->timeout = timeout;
@@ -325,4 +345,14 @@ void Data::DataStorage::checkExipired ()
         if (iter->second && (now - iter->second->updateTime) > timeout)
             iter->second->quality = Data::Quality::Poor;
     }
+}
+
+void Data::DisplayedParams::checkAdd (Data::Parameter& param)
+{
+    iterator pos = find (param.type);
+
+    if (pos == end())
+        emplace (param.type, param);
+    else
+        pos->second.update (param.data);
 }

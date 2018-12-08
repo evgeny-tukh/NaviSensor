@@ -140,8 +140,9 @@ void Sensors::Sensor::forwardProcessedData ()
 
     for (auto & param : params)
     {
-        //Data::ParamHeader *dest = (Data::ParamHeader *) (buffer + offset);
-        buffer.addData (param, sizeof (Data::ParamHeader));
+        const Data::ParamHeader& header = param->getHeader ();
+
+        buffer.addData ((void *) & header, sizeof (Data::ParamHeader));
         buffer.addData (param->data, param->size);
     }
 
@@ -238,6 +239,11 @@ void Sensors::Sensor::enableSentenceStateSend (const bool enable, const unsigned
     sentenceStatePort = port;
 }
 
+void Sensors::Sensor::extractParameters (Data::ParamArray& params)
+{
+    dataStorage.extractAll (params);
+}
+
 Sensors::SensorArray::SensorArray (SensorConfigArray *sensorConfigs)
 {
     this->running       = false;
@@ -275,10 +281,19 @@ void Sensors::SensorArray::createAll ()
 
 void Sensors::SensorArray::startAll ()
 {
-    for (auto & sensor : *this)
+    sensorsByID.clear ();
+
+    for (Sensor *sensor : *this)
     {
         if (sensor)
+        {
+            const SensorConfig *config   = sensor->getConfig ();
+            const int           sensorID = ((SensorConfig *) config)->id ();
+
             sensor->start ();
+
+            sensorsByID.insert (sensorsByID.end (), std::pair <const int, Sensor *> (sensorID, sensor));
+        }
     }
 
     running = true;
@@ -430,4 +445,19 @@ Sensors::SensorStateArray& Sensors::SensorArray::populateSensorStateArray (Senso
     }
 
     return sensorStates;
+}
+
+Sensors::Sensor *Sensors::SensorArray::sensorByID (const int sensorID)
+{
+    SensorMap::iterator pos = sensorsByID.find (sensorID);
+
+    return pos == sensorsByID.end () ? 0 : pos->second;
+}
+
+const char *Sensors::SensorArray::sensorNameByID (const int sensorID)
+{
+    SensorMap::iterator pos = sensorsByID.find (sensorID);
+    SensorConfig       *cfg = pos == sensorsByID.end () ? 0 : (SensorConfig *) pos->second->getConfig ();
+
+    return cfg ? cfg->getName () : 0;
 }

@@ -108,6 +108,9 @@
     <ClInclude Include="..\NaviSensor\Formatting.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="LocalListener.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ButtonWrapper.cpp">
@@ -183,6 +186,9 @@
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="..\NaviSensor\Formatting.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="LocalListener.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>

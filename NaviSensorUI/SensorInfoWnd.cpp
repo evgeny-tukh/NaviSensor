@@ -365,12 +365,12 @@ void SensorInfoWnd::updateParameters ()
 
     for (auto & item : params)
     {
-        DisplParam& param = item.second;
+        Data::DisplParam& param = item.second;
 
         if (param.item < 0)
-            param.item = parameters.AddItem (getDataTypeName (param.type));
+            param.item = parameters.AddItem (Data::getDataTypeName (param.type));
 
-        parameters.SetItemText (param.item, 1, getDataQualityName (param.quality));
+        parameters.SetItemText (param.item, 1, Data::getDataQualityName (param.quality));
         parameters.SetItemText (param.item, 2, formatDataValueShort (param, buffer, sizeof (buffer)));
     }
 
@@ -394,14 +394,4 @@ void SensorInfoWnd::redectectData()
     prevStatuses.clear ();
 
     sentences.DeleteAllItems ();
-}
-
-void DisplayedParams::checkAdd (Data::Parameter& param)
-{
-    iterator pos = find (param.type);
-
-    if (pos == end ())
-        emplace (param.type, param);
-    else
-        pos->second.update (param.data);
 }

@@ -11,6 +11,7 @@ namespace Data
     typedef std::pair <int, Parameter *> ParamInfo;
 
     typedef std::vector <Parameter *> ParamArray;
+    typedef std::vector <GlobalParameter *> GlobalParamArray;
 
     class SensorDataStorage : public std::map <DataType, Parameter *>
     {
@@ -27,6 +28,7 @@ namespace Data
             int         paramTimeout;
             bool        active;
             std::thread watchdog;
+            std::mutex  locker;
 
             void watchdogProc ();
             static void watchdogProcInternal (SensorDataStorage *);
@@ -41,12 +43,13 @@ namespace Data
             void update (const int sensorID, Parameter& param);
             Parameter *findFirst (DataType type, int& sensorID, const bool goodOnly = true);
 
-            void extractAll (ParamArray& params, DataType type = DataType::All, const bool goodOnly = true);
+            void extractAll (GlobalParamArray& params, DataType type = DataType::All, const bool goodOnly = true);
 
         protected:
             int         paramTimeout;
             bool        active;
             std::thread watchdog;
+            std::mutex  locker;
 
             void watchdogProc ();
             static void watchdogProcInternal (GlobalDataStorage *);

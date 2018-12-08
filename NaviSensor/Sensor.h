@@ -49,6 +49,8 @@ namespace Sensors
             void enableProcessedDataSend (const bool enable, const unsigned int port = 0);
             void enableSentenceStateSend (const bool enable, const unsigned int port = 0);
 
+            void extractParameters (Data::ParamArray& params);
+
         protected:
             ForwardCb               forwardCb;
             bool                    running, done, alive;
@@ -126,6 +128,12 @@ namespace Sensors
 
                 return result;
             }
+
+            inline void lock () { locker.lock (); }
+            inline void unlock () { locker.unlock (); }
+
+    protected:
+            std::mutex locker;
     };
 
     #pragma pack()
@@ -158,7 +166,13 @@ namespace Sensors
 
             SensorStateArray& populateSensorStateArray (SensorStateArray&);
 
+            Sensor *sensorByID (const int sensorID);
+            const char *sensorNameByID (const int sensorID);
+
         protected:
-            bool running;
+            typedef std::map <const int, Sensor *> SensorMap;
+
+            SensorMap sensorsByID;
+            bool      running;
     };
 }

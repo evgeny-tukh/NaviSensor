@@ -10,30 +10,6 @@
 #include "../NaviSensor/Network.h"
 #include "../NaviSensor/Socket.h"
 
-struct DisplParam : Data::Parameter
-{
-    DisplParam (Data::Parameter& param)
-    {
-        assign (param);
-
-        item = -1;
-    }
-
-    int item;
-};
-
-class DisplayedParams : public std::map <Data::DataType, DisplParam>
-{
-    public:
-        void checkAdd (Data::Parameter&);
-
-        inline void lock () { locker.lock (); }
-        inline void unlock() { locker.unlock (); }
-
-    protected:
-        std::mutex locker;
-};
-
 class SensorInfoWnd : public CDialogWrapper
 {
     public:
@@ -48,7 +24,7 @@ class SensorInfoWnd : public CDialogWrapper
         Callback                  onDestroy;
         Sensors::SensorConfig    *sensorCfg;
         CListCtrlWrapper          sentences, parameters;
-        DisplayedParams           params;
+        Data::DisplayedParams     params;
         CEditWrapper              terminal;
         CButtonWrapper            pause;
         Comm::DataNode            dataNode;
@@ -65,8 +41,6 @@ class SensorInfoWnd : public CDialogWrapper
         virtual LRESULT OnTimer (UINT uiTimerID);
         virtual LRESULT OnDestroy ();
 
-        //void logicProc (Comm::CommCallback sendCb, Comm::CommCallback rcvCb);
-        //static void logicProcInternal (Comm::CommCallback sendCb, Comm::CommCallback rcvCb, void *self);
         void onMessage (Comm::MsgType msgType, const char *data, const int size);
         static void onMessageInternal (Comm::MsgType msgType, const char *data, const int size, void *self);
 
