@@ -216,5 +216,11 @@
     <Image Include="sensor.bmp">
       <Filter>Файлы ресурсов</Filter>
     </Image>
+    <Image Include="bmp00001.bmp">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
+    <Image Include="params.bmp">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
   </ItemGroup>
 </Project>

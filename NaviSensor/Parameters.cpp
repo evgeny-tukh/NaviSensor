@@ -67,6 +67,25 @@ const char *Data::getDataQualityName (const Data::Quality quality)
     return result;
 }
 
+const bool Data::alwaysSelected (const Data::DataType type)
+{
+    bool result;
+
+    switch (type)
+    {
+        case Data::DataType::GPSQual:
+        case Data::DataType::HDOP:
+        case Data::DataType::Position:
+        case Data::DataType::PosSysMode:
+            result = true; break;
+
+        default:
+            result = false;
+    }
+
+    return result;
+}
+
 const size_t Data::getDataSize (const Data::DataType type)
 {
     size_t size;

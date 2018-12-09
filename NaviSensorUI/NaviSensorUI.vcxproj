@@ -216,7 +216,9 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="bitmap1.bmp" />
+    <Image Include="bmp00001.bmp" />
     <Image Include="NaviSensorUI.ico" />
+    <Image Include="params.bmp" />
     <Image Include="sensor.bmp" />
     <Image Include="small.ico" />
   </ItemGroup>

@@ -30,6 +30,37 @@ HTREEITEM CTreeCtrlWrapper::InsertItem (const char *pszText, LPARAM lParam, HTRE
     return (HTREEITEM) SendMessage (TVM_INSERTITEM, 0, (LPARAM) & tviItem);
 }
 
+void CTreeCtrlWrapper::SetItemImage (HTREEITEM htiItem, const int nImage)
+{
+    TVITEM tviItem;
+
+    memset (& tviItem, 0, sizeof (tviItem));
+
+    tviItem.mask           = TVIF_IMAGE | TVIF_SELECTEDIMAGE;
+    tviItem.hItem          = htiItem;
+    tviItem.iImage         =
+    tviItem.iSelectedImage = nImage;
+
+    SendMessage (TVM_SETITEM, 0, (LPARAM) & tviItem);
+}
+
+HTREEITEM CTreeCtrlWrapper::InsertItem (const char *pszText, const int nImage, LPARAM lParam, HTREEITEM htiParent, HTREEITEM htiInsertAfter)
+{
+    TVINSERTSTRUCT tviItem;
+
+    memset (&tviItem, 0, sizeof (tviItem));
+
+    tviItem.hInsertAfter        = htiInsertAfter;
+    tviItem.hParent             = htiParent;
+    tviItem.item.mask           = TVIF_TEXT | TVIF_PARAM | TVIF_IMAGE | TVIF_SELECTEDIMAGE;
+    tviItem.item.pszText        = (char *) pszText;
+    tviItem.item.lParam         = lParam;
+    tviItem.item.iImage         =
+    tviItem.item.iSelectedImage = nImage;
+
+    return (HTREEITEM) SendMessage (TVM_INSERTITEM, 0, (LPARAM) & tviItem);
+}
+
 void CTreeCtrlWrapper::SetItemCheck (HTREEITEM htiItem, const BOOL bChecked)
 {
     TVITEM  tviItem;

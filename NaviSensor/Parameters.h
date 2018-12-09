@@ -241,5 +241,7 @@ namespace Data
     const char *getGPSQualityName (const GPSQuality quality);
     const char *getPosSysModeName (const PosSystemMode mode);
 
+    const bool alwaysSelected (const DataType);
+
     char *formatDataValueShort (const Data::Parameter& param, char *buffer, const size_t size);
 }
