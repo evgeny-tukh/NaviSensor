@@ -9,4 +9,6 @@ namespace Formatting
     char *formatLon (const double lon, char *buffer, const size_t size);
     char *formatPosition(Data::Pos *position, char *buffer, const size_t size);
     char *formatUTC(Data::Time *utc, char *buffer, const size_t size);
+
+    char *getStringFormatValue (Data::DataType type, void *data, char *buffer, const size_t size);
 }

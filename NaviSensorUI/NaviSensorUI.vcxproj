@@ -174,6 +174,7 @@
     <ClInclude Include="SensorPropsDlg.h" />
     <ClInclude Include="Serialization.h" />
     <ClInclude Include="SerialPortPropsDlg.h" />
+    <ClInclude Include="StaticWrapper.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="tools.h" />
     <ClInclude Include="TreeCtrlWrapper.h" />
@@ -203,6 +204,7 @@
     <ClCompile Include="SensorPropsDlg.cpp" />
     <ClCompile Include="Serialization.cpp" />
     <ClCompile Include="SerialPortPropsDlg.cpp" />
+    <ClCompile Include="StaticWrapper.cpp" />
     <ClCompile Include="Tools.cpp" />
     <ClCompile Include="TreeCtrlWrapper.cpp" />
     <ClCompile Include="UdpConnectionPropsDlg.cpp" />

@@ -41,4 +41,38 @@ namespace Formatting
 
         return buffer;
     }
+
+    char *getStringFormatValue (Data::DataType type, void *data, char *buffer, const size_t size)
+    {
+        switch (type)
+        {
+            case Data::DataType::Course:
+            case Data::DataType::TrueHeading:
+                snprintf (buffer, size, "%05.1f°", *((float *) data)); break;
+
+            case Data::DataType::SpeedOG:
+            case Data::DataType::SpeedTW:
+                snprintf (buffer, size, "%.1fkn", *((float *)data)); break;
+
+            case Data::DataType::HDOP:
+                snprintf (buffer, size, "%.1f", *((float *)data)); break;
+
+            case Data::DataType::Position:
+                formatPosition ((Data::Pos *) data, buffer, size); break;
+
+            case Data::DataType::PosSysMode:
+                strncpy (buffer, Data::getPosSysModeName (*((Data::PosSystemMode *) data)), size);  break;
+
+            case Data::DataType::RateOfTurn:
+                snprintf(buffer, size, "%.1f°/sec", *((float *)data)); break;
+
+            case Data::DataType::UTC:
+                formatUTC ((Data::Time *) data, buffer, size); break;
+
+            default:
+                memset (buffer, 0, size);
+        }
+
+        return buffer;
+    }
 }

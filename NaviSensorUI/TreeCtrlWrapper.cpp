@@ -70,6 +70,16 @@ LPARAM CTreeCtrlWrapper::GetItemData (HTREEITEM htiItem)
         return 0;
 }
 
+unsigned int CTreeCtrlWrapper::GetIndent()
+{
+    return SendMessage (TVM_GETINDENT);
+}
+
+HTREEITEM CTreeCtrlWrapper::GetNextItem (HTREEITEM htiItem, WPARAM wWhich)
+{
+    return (HTREEITEM) SendMessage (TVM_GETNEXTITEM, wWhich, (LPARAM) htiItem);
+}
+
 HTREEITEM CTreeCtrlWrapper::GetSelectedItem ()
 {
     return (HTREEITEM) SendMessage (TVM_GETNEXTITEM, TVGN_CARET);

@@ -15,6 +15,8 @@ class CTreeCtrlWrapper : public CGenericControlWrapper
         BOOL GetItemCheck (HTREEITEM htiItem);
         LPARAM GetItemData (HTREEITEM htiItem);
         HTREEITEM GetSelectedItem (void);
+        HTREEITEM GetNextItem (HTREEITEM htiItem, WPARAM wWhich);
         void SetSelectedItem (HTREEITEM htiItem);
         void EnableCheckBoxes (const BOOL bEnable = TRUE);
+        unsigned int GetIndent ();
 };

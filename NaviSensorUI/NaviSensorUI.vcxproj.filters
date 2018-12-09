@@ -111,6 +111,9 @@
     <ClInclude Include="LocalListener.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="StaticWrapper.h">
+      <Filter>Файлы заголовков\Wrappers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ButtonWrapper.cpp">
@@ -190,6 +193,9 @@
     </ClCompile>
     <ClCompile Include="LocalListener.cpp">
       <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticWrapper.cpp">
+      <Filter>Исходные файлы\Wrappers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
