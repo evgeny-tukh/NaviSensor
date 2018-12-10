@@ -177,6 +177,7 @@
     <ClCompile Include="SerialReader.cpp" />
     <ClCompile Include="Socket.cpp" />
     <ClCompile Include="TextSensor.cpp" />
+    <ClCompile Include="UDPReader.cpp" />
     <ClCompile Include="VBW.cpp" />
     <ClCompile Include="VHW.cpp" />
     <ClCompile Include="VTG.cpp" />
@@ -205,6 +206,7 @@
     <ClInclude Include="SerialReader.h" />
     <ClInclude Include="Socket.h" />
     <ClInclude Include="TextSensor.h" />
+    <ClInclude Include="UDPReader.h" />
     <ClInclude Include="VBW.h" />
     <ClInclude Include="VHW.h" />
     <ClInclude Include="VTG.h" />

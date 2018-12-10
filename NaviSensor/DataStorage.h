@@ -6,7 +6,32 @@
 
 namespace Data
 {
-    typedef std::map <int, Parameter *> ParamMap;
+    class ParamMap : public std::map <int, Parameter *>
+    {
+        public:
+            ParamMap ()
+            {
+                masterSourceID = 0;
+            }
+
+            inline void assignMasterSourceID (const int id)
+            {
+                masterSourceID = id;
+            }
+
+            inline const int getMasterSourceID ()
+            {
+                return masterSourceID;
+            }
+
+            inline bool hasMasterSource ()
+            {
+                return masterSourceID > 0;
+            }
+
+        protected:
+            int masterSourceID;
+    };
 
     typedef std::pair <int, Parameter *> ParamInfo;
 
@@ -44,6 +69,8 @@ namespace Data
             Parameter *findFirst (DataType type, int& sensorID, const bool goodOnly = true);
 
             void extractAll (GlobalParamArray& params, DataType type = DataType::All, const bool goodOnly = true);
+
+            void assignMasterSource (const int sensorID, Data::DataType paramType);
 
         protected:
             int         paramTimeout;

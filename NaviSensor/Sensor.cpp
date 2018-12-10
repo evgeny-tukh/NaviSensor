@@ -205,6 +205,9 @@ Reader *Sensors::Sensor::createTerminal ()
         case Connection::Serial:
             terminal = new SerialReader (& config->serialParam); break;
 
+        case Connection::UDP:
+            terminal = new UDPReader (&config->udpParam); break;
+
         default:
             terminal = 0;
     }

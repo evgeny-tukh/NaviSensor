@@ -13,6 +13,7 @@ namespace Comm
             Socket ();
             virtual ~Socket ();
 
+            bool create (const unsigned int port, const bool broadcast, const in_addr bindAddr);
             bool create (const unsigned int port = 0, const bool broadcast = false, const char *bindAddr = 0);
             void close ();
 
@@ -24,6 +25,8 @@ namespace Comm
             void listen (ReadCb callback, bool *finish, void *param = 0, const char *onlyFrom = 0);
 
             unsigned long getAvalDataSize ();
+
+            inline bool opened () { return handle != INVALID_SOCKET; }
 
         protected:
             SOCKET handle;

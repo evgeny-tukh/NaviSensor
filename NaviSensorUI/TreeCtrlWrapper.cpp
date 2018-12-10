@@ -132,3 +132,20 @@ void CTreeCtrlWrapper::EnableCheckBoxes (const BOOL bEnable)
 
     SetWindowLongPtr (m_hwndHandle, GWL_STYLE, dwStyle);
 }
+
+HTREEITEM CTreeCtrlWrapper::HitTest (POINT ptPoint, UINT *puiFlags)
+{
+    TVHITTESTINFO htiInfo;
+    HTREEITEM     htiResult;
+
+    memset (&htiInfo, 0, sizeof (htiInfo));
+
+    htiInfo.pt = ptPoint;
+
+    htiResult = (HTREEITEM) SendMessage (TVM_HITTEST, 0, (LPARAM) & htiInfo);
+
+    if (puiFlags)
+        *puiFlags = htiInfo.flags;
+
+    return htiResult;
+}

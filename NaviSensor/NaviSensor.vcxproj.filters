@@ -25,6 +25,12 @@
     <Filter Include="Исходные файлы\Parsers">
       <UniqueIdentifier>{3b8e94f2-499b-49ad-bb5d-8c605725963d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Исходные файлы\Readers">
+      <UniqueIdentifier>{889974bf-fcbf-4138-a46a-f5126603e40e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Readers">
+      <UniqueIdentifier>{e5bc117c-1d02-4ba6-8f1c-26ec09f77c62}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="NaviSensor.cpp">
@@ -37,12 +43,6 @@
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="BinQueue.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="Reader.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="SerialReader.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="Sensor.cpp">
@@ -108,6 +108,15 @@
     <ClCompile Include="Formatting.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="Reader.cpp">
+      <Filter>Исходные файлы\Readers</Filter>
+    </ClCompile>
+    <ClCompile Include="UDPReader.cpp">
+      <Filter>Исходные файлы\Readers</Filter>
+    </ClCompile>
+    <ClCompile Include="SerialReader.cpp">
+      <Filter>Исходные файлы\Readers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\NaviSensorUI\SensorConfig.h">
@@ -116,13 +125,7 @@
     <ClInclude Include="..\NaviSensorUI\tools.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Reader.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="BinQueue.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="SerialReader.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Sensor.h">
@@ -187,6 +190,15 @@
     </ClInclude>
     <ClInclude Include="Formatting.h">
       <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="SerialReader.h">
+      <Filter>Файлы заголовков\Readers</Filter>
+    </ClInclude>
+    <ClInclude Include="UDPReader.h">
+      <Filter>Файлы заголовков\Readers</Filter>
+    </ClInclude>
+    <ClInclude Include="Reader.h">
+      <Filter>Файлы заголовков\Readers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

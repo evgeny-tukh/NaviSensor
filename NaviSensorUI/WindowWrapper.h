@@ -61,6 +61,11 @@ class CWindowWrapper
             return m_bIsDialogBox;
         }
 
+        inline BOOL ScreenToClient(POINT *pPoint)
+        {
+            return ::ScreenToClient (m_hwndHandle, pPoint);
+        }
+
     protected:
         ATOM      m_aClass;
         HWND      m_hwndHandle,

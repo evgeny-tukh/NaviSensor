@@ -51,7 +51,7 @@ LRESULT SensorInfoWnd::OnDestroy ()
     return CWindowWrapper::OnDestroy ();
 }
 
-void SensorInfoWnd::onMessageInternal (Comm::MsgType msgType, const char *data, const int size, void *param)
+void SensorInfoWnd::onMessageInternal (Comm::MsgType msgType, const char *data, const int size, void *param, void *param2)
 {
     if (param)
     {
@@ -137,7 +137,7 @@ void SensorInfoWnd::requestRawData (const bool send)
     int sensorID = sensorCfg->id ();
 
     dataNode.sendCommand (Comm::CmdType::RawDataCtl, (byte) sensorID, (byte) (send ? 1 : 0),
-                          (unsigned short) (Comm::Ports::RawDataFirstPort + sensorID), 8080, "127.0.0.1");
+                          (unsigned short) (Comm::Ports::RawDataFirstPort + sensorID), Comm::CmdPort, "127.0.0.1");
 }
 
 void SensorInfoWnd::requestProcessedData (const bool send)
@@ -145,7 +145,7 @@ void SensorInfoWnd::requestProcessedData (const bool send)
     int sensorID = sensorCfg->id ();
 
     dataNode.sendCommand (Comm::CmdType::ProcessedDataCtl, (byte) sensorID, (byte) (send ? 1 : 0),
-                         (unsigned short) (Comm::Ports::ProcessedDataFirstPort + sensorID), 8080, "127.0.0.1");
+                         (unsigned short) (Comm::Ports::ProcessedDataFirstPort + sensorID), Comm::CmdPort, "127.0.0.1");
 }
 
 void SensorInfoWnd::requestSentenceState (const bool send)
@@ -153,7 +153,7 @@ void SensorInfoWnd::requestSentenceState (const bool send)
     int sensorID = sensorCfg->id ();
 
     dataNode.sendCommand (Comm::CmdType::SentenceListCtl, (byte) sensorID, (byte) (send ? 1 : 0),
-                         (unsigned short) (Comm::Ports::SentenceStateFirstPort + sensorID), 8080, "127.0.0.1");
+                         (unsigned short) (Comm::Ports::SentenceStateFirstPort + sensorID), Comm::CmdPort, "127.0.0.1");
 }
 
 void SensorInfoWnd::processedDataReceiverProc ()

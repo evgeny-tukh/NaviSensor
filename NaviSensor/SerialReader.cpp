@@ -7,7 +7,7 @@
 #define ASCII_XON       0x11 
 #define ASCII_XOFF      0x13 
 
-Readers::SerialReader::SerialReader (Sensors::SerialParams *config) : Reader(config)
+Readers::SerialReader::SerialReader (Sensors::SerialParams *config) : Reader (config)
 {
     portHandle = INVALID_HANDLE_VALUE;
 }

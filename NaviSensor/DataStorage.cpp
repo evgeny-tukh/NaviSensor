@@ -95,6 +95,24 @@ void Data::GlobalDataStorage::update (const int sensorID, Parameter& param)
 
     ParamMap *params = typePos->second;
 
+    // Assign or reassing master source if needed
+    if (param.quality == Data::Quality::Good)
+    {
+        int masterSourceID = params->getMasterSourceID ();
+
+        if (masterSourceID == 0)
+        {
+            params->assignMasterSourceID (sensorID);
+        }
+        else if (masterSourceID != sensorID)
+        {
+            Data::Parameter *master = params->at (masterSourceID);
+
+            if (master && master->quality != Data::Quality::Good)
+                params->assignMasterSourceID (sensorID);
+        }
+    }
+
     ParamMap::iterator paramPos = params->find (sensorID);
 
     if (paramPos == params->end ())
@@ -137,10 +155,12 @@ void Data::GlobalDataStorage::extractAll (Data::GlobalParamArray& params, Data::
 
                                 for (ParamMap::iterator iter = paramMap->begin(); iter != paramMap->end(); ++iter)
                                 {
-                                    if (!goodOnly || iter->second->quality == Quality::Good)
-                                    {
-                                        params.push_back (new GlobalParameter (iter->first, *(iter->second)));
-                                    }
+                                    const int        sensorID = iter->first;
+                                    Data::Parameter *param    = iter->second;
+                                    bool             master   = Data::alwaysSelected (param->type) || sensorID == paramMap->getMasterSourceID ();
+
+                                    if (!goodOnly || param->quality == Quality::Good)
+                                        params.push_back (new GlobalParameter (sensorID, master, *param));
                                 }
                             };
                     
@@ -170,20 +190,28 @@ void Data::GlobalDataStorage::watchdogProc ()
 
     while (active)
     {
+        locker.lock ();
+
         for (iterator typeIter = begin (); typeIter != end(); ++ typeIter)
         {
             ParamMap *params = typeIter->second;
 
-            for (ParamMap::iterator paramIter = params->begin(); paramIter != params->end (); ++ paramIter)
+            for (ParamMap::iterator paramIter = params->begin (); paramIter != params->end (); ++ paramIter)
             {
                 Parameter *param = paramIter->second;
 
                 if ((now - param->updateTime) > paramTimeout)
                     param->quality = Quality::Poor;
+
+                // Disregard master source if it is poor
+                if (params->getMasterSourceID () == paramIter->first && param->quality != Quality::Good)
+                    params->assignMasterSourceID (0);
             }
         }
 
-        Tools::sleepFor (1000);
+        locker.unlock ();
+
+        Tools::sleepFor (500);
     }
 }
 
@@ -191,4 +219,16 @@ void Data::GlobalDataStorage::watchdogProcInternal (Data::GlobalDataStorage *sel
 {
     if (self)
         self->watchdogProc ();
+}
+
+void Data::GlobalDataStorage::assignMasterSource (const int sensorID, Data::DataType paramType)
+{
+    locker.lock ();
+
+    iterator pos = find (paramType);
+
+    if (pos != end ())
+        pos->second->assignMasterSourceID (sensorID);
+
+    locker.unlock ();
 }

@@ -15,6 +15,35 @@ Comm::Socket::~Socket ()
     close ();
 }
 
+bool Comm::Socket::create (const unsigned int port, const bool broadcast, const in_addr bindAddr)
+{
+    bool result = false;
+
+    handle = socket (AF_INET, SOCK_DGRAM, 0/*IPPROTO_IP*/);
+
+    if (handle != INVALID_SOCKET)
+    {
+        sockaddr_in  local;
+        unsigned int trueVal = 1;
+
+        setsockopt (handle, SOL_SOCKET, SO_REUSEADDR, (const char *) & trueVal, sizeof (trueVal));
+
+        memset (&local, 0, sizeof (local));
+
+        local.sin_family           = AF_INET;
+        local.sin_port             = htons(port);
+        local.sin_addr.S_un.S_addr = bindAddr.S_un.S_addr;
+
+        if (bind (handle, (sockaddr *) & local, sizeof (local)) == 0)
+            result = true;
+
+        if (broadcast)
+            setsockopt (handle, SOL_SOCKET, SO_BROADCAST, (const char *) & trueVal, sizeof (trueVal));
+    }
+
+    return result;
+}
+
 bool Comm::Socket::create (const unsigned int port, const bool broadcast, const char *bindAddr)
 {
     bool result = false;

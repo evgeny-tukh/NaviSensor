@@ -121,19 +121,20 @@ namespace Data
 
     struct LANParamHeader : ParamHeader
     {
-        unsigned char sensorID;
+        unsigned char sensorID, master;
         char          sensorName [20];
 
         LANParamHeader () : ParamHeader ()
         {
-            sensorID = 0;
+            sensorID = master = 0;
             
             memset (sensorName, 0, sizeof (sensorName));
         }
 
-        LANParamHeader (ParamHeader& source, const int sensorID = 0, const char *sensorName = 0) : ParamHeader (source)
+        LANParamHeader (ParamHeader& source, const int sensorID = 0, const bool master = true, const char *sensorName = 0) : ParamHeader (source)
         {
             this->sensorID = sensorID;
+            this->master   = master ? 1 : 0;
 
             if (sensorName)
                 strncpy (this->sensorName, sensorName, sizeof (this->sensorName));
@@ -149,12 +150,15 @@ namespace Data
 
     struct GlobalParameter : Parameter
     {
-        int sensorID;
+        int  sensorID;
+        bool master;
 
         GlobalParameter ();
-        GlobalParameter (const int);
-        GlobalParameter (const int, DataType);
-        GlobalParameter (const int, Parameter&);
+        GlobalParameter (const int, const bool);
+        GlobalParameter (const int, const bool, DataType);
+        GlobalParameter (const int, const bool, Parameter&);
+
+        void init (const int sensorID = 0, const bool master = true);
     };
 
     struct ReceivedParameter : GlobalParameter

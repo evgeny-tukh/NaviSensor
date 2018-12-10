@@ -291,24 +291,30 @@ void Data::Parameter::update (GenericData& source, Data::Quality sourceQuality)
     memcpy (data, & source, size);
 }
 
+void Data::GlobalParameter::init (const int sensorID, const bool master)
+{
+    this->sensorID = sensorID;
+    this->master   = master;
+}
+
 Data::GlobalParameter::GlobalParameter () : Data::Parameter ()
 {
-    this->sensorID = 0;
+    init ();
 }
 
-Data::GlobalParameter::GlobalParameter (const int sensorID) : Data::Parameter ()
+Data::GlobalParameter::GlobalParameter (const int sensorID, const bool master) : Data::Parameter ()
 {
-    this->sensorID = sensorID;
+    init (sensorID, master);
 }
 
-Data::GlobalParameter::GlobalParameter (const int sensorID, DataType type) : Data::Parameter (type)
+Data::GlobalParameter::GlobalParameter (const int sensorID, const bool master, DataType type) : Data::Parameter (type)
 {
-    this->sensorID = sensorID;
+    init (sensorID, master);
 }
 
-Data::GlobalParameter::GlobalParameter (const int sensorID, Parameter& source) : Data::Parameter (source)
+Data::GlobalParameter::GlobalParameter (const int sensorID, const bool master, Parameter& source) : Data::Parameter (source)
 {
-    this->sensorID = sensorID;
+    init (sensorID, master);
 }
 
 Data::DataStorage::DataStorage (const time_t timeout)

@@ -21,4 +21,5 @@ class CTreeCtrlWrapper : public CGenericControlWrapper
         void EnableCheckBoxes (const BOOL bEnable = TRUE);
         void SetItemImage (HTREEITEM htiItem, const int nImage);
         unsigned int GetIndent ();
+        HTREEITEM HitTest (POINT ptPoint, UINT *puiFlags = NULL);
 };

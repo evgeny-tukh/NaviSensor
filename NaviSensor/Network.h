@@ -9,12 +9,13 @@ namespace Comm
 {
     enum Ports
     {
-        CmdPort                = 8080,
-        SensorPort             = 9080,
-        RawDataFirstPort       = 7080,
-        SentenceStateFirstPort = 6080,
-        ProcessedDataFirstPort = 5080,
-        ProcessedDataPort      = 8001
+        CmdPort                 = 8080,
+        SensorPort              = 9080,
+        RawDataFirstPort        = 7080,
+        SentenceStateFirstPort  = 6080,
+        ProcessedDataFirstPort  = 5080,
+        ProcessedDataPort       = 8001,
+        MasterProcessedDataPort = 8000
     };
 
     enum MsgType
@@ -31,11 +32,12 @@ namespace Comm
 
     enum CmdType
     {
-        Start            = 1,
-        Stop             = 2,
-        RawDataCtl       = 3,
-        SentenceListCtl  = 4,
-        ProcessedDataCtl = 5
+        Start             = 1,
+        Stop              = 2,
+        RawDataCtl        = 3,
+        SentenceListCtl   = 4,
+        ProcessedDataCtl  = 5,
+        SelectMasterParam = 6
     };
 
     #pragma pack(1)
@@ -99,9 +101,9 @@ namespace Comm
     class DataNode : public Socket
     {
         public:
-            typedef std::function <void (MsgType msgType, const char *data, const int size, void *param)> MsgReadCb;
+            typedef std::function <void (MsgType msgType, const char *data, const int size, void *param, void *param2)> MsgReadCb;
 
-            DataNode (const unsigned int port, MsgReadCb readCb, void *param = 0);
+            DataNode (const unsigned int port, MsgReadCb readCb, void *param = 0, void *param2 = 0);
             virtual ~DataNode ();
 
             void sendMessage (MsgType msgType, byte *data, const int dataSize, const unsigned int port, const char *destAddr = 0);
@@ -109,12 +111,17 @@ namespace Comm
             unsigned int sendCommand (CmdType cmd, const unsigned short arg1, const unsigned short arg2, const unsigned int port = Ports::CmdPort, const char *destAddr = 0);
             unsigned int sendCommand (CmdType cmd, const unsigned char arg1, const unsigned char arg2, const unsigned short arg3, const unsigned int port = Ports::CmdPort, const char *destAddr = 0);
 
+            static void sendMessage (Socket *, MsgType msgType, byte *data, const int dataSize, const unsigned int port, const char *destAddr = 0);
+            static unsigned int sendCommand (Socket *, CmdType cmd, const unsigned int arg = 0, const unsigned int port = Ports::CmdPort, const char *destAddr = 0);
+            static unsigned int sendCommand (Socket *, CmdType cmd, const unsigned short arg1, const unsigned short arg2, const unsigned int port = Ports::CmdPort, const char *destAddr = 0);
+            static unsigned int sendCommand (Socket *, CmdType cmd, const unsigned char arg1, const unsigned char arg2, const unsigned short arg3, const unsigned int port = Ports::CmdPort, const char *destAddr = 0);
+
         protected:
             unsigned int port;
             std::thread  worker;
             bool         active;
 
-            void workerProc (MsgReadCb readCb, void *param);
-            static void workerProcInternal (MsgReadCb readCb, void *param, DataNode *self);
+            void workerProc (MsgReadCb readCb, void *param, void *param2);
+            static void workerProcInternal (MsgReadCb readCb, void *param, void *param2, DataNode *self);
     };
 }
