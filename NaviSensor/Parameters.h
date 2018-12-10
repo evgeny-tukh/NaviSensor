@@ -20,6 +20,9 @@ namespace Data
         SpeedTW     = 8,
         RateOfTurn  = 9,
         PosSysMode  = 10,
+        DepthBK     = 11,
+        DepthBT     = 12,
+        DepthBS     = 13,
 
         All         = -1
     };

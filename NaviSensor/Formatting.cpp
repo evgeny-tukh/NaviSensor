@@ -52,10 +52,10 @@ namespace Formatting
 
             case Data::DataType::SpeedOG:
             case Data::DataType::SpeedTW:
-                snprintf (buffer, size, "%.1fkn", *((float *)data)); break;
+                snprintf (buffer, size, "%.1fkn", *((float *) data)); break;
 
             case Data::DataType::HDOP:
-                snprintf (buffer, size, "%.1f", *((float *)data)); break;
+                snprintf (buffer, size, "%.1f", *((float *) data)); break;
 
             case Data::DataType::Position:
                 formatPosition ((Data::Pos *) data, buffer, size); break;
@@ -64,10 +64,15 @@ namespace Formatting
                 strncpy (buffer, Data::getPosSysModeName (*((Data::PosSystemMode *) data)), size);  break;
 
             case Data::DataType::RateOfTurn:
-                snprintf(buffer, size, "%.1f°/sec", *((float *)data)); break;
+                snprintf (buffer, size, "%.1f°/sec", *((float *) data)); break;
 
             case Data::DataType::UTC:
                 formatUTC ((Data::Time *) data, buffer, size); break;
+
+            case Data::DataType::DepthBK:
+            case Data::DataType::DepthBS:
+            case Data::DataType::DepthBT:
+                snprintf (buffer, size, "%.1fm", *((float *) data)); break;
 
             default:
                 memset (buffer, 0, size);

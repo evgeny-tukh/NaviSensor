@@ -6,7 +6,7 @@ Parsers::GLL::GLL () : NmeaParser ("GLL")
 
 bool Parsers::GLL::parse (NMEA::Sentence& sentence, Sensors::Sensor *sensor)
 {
-    Tools::Strings& fields = sentence.getFields();
+    Tools::Strings& fields = sentence.getFields ();
     Data::Time      utc;
     Data::Pos       position;
     char            validity,

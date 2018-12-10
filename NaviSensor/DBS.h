@@ -1,14 +1,12 @@
 #pragma once
 
-#include "Parser.h"
+#include "DBc.h"
 
 namespace Parsers
 {
-    class DBS : public NmeaParser
+    class DBS : public DBc
     {
         public:
-            DBS ();
-
-            virtual bool parse (NMEA::Sentence&, Sensors::Sensor *);
+            DBS () : DBc ("DBS") {}
     };
 }

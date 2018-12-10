@@ -81,15 +81,6 @@
     <ClCompile Include="VTG.cpp">
       <Filter>Исходные файлы\Parsers</Filter>
     </ClCompile>
-    <ClCompile Include="DBK.cpp">
-      <Filter>Исходные файлы\Parsers</Filter>
-    </ClCompile>
-    <ClCompile Include="DBS.cpp">
-      <Filter>Исходные файлы\Parsers</Filter>
-    </ClCompile>
-    <ClCompile Include="DBT.cpp">
-      <Filter>Исходные файлы\Parsers</Filter>
-    </ClCompile>
     <ClCompile Include="MWV.cpp">
       <Filter>Исходные файлы\Parsers</Filter>
     </ClCompile>
@@ -116,6 +107,9 @@
     </ClCompile>
     <ClCompile Include="SerialReader.cpp">
       <Filter>Исходные файлы\Readers</Filter>
+    </ClCompile>
+    <ClCompile Include="DBc.cpp">
+      <Filter>Исходные файлы\Parsers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -199,6 +193,9 @@
     </ClInclude>
     <ClInclude Include="Reader.h">
       <Filter>Файлы заголовков\Readers</Filter>
+    </ClInclude>
+    <ClInclude Include="DBc.h">
+      <Filter>Файлы заголовков\Parsers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

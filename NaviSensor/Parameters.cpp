@@ -38,6 +38,15 @@ const char *Data::getDataTypeName (const Data::DataType type)
         case DataType::PosSysMode:
             result = "ModeInd"; break;
 
+        case DataType::DepthBK:
+            result = "Depth BK"; break;
+
+        case DataType::DepthBS:
+            result = "Depth BS"; break;
+
+        case DataType::DepthBT:
+            result = "Depth BT"; break;
+
         default:
             result = "";
     }
@@ -104,6 +113,9 @@ const size_t Data::getDataSize (const Data::DataType type)
         case DataType::SpeedTW:
         case DataType::SpeedOG:
         case DataType::RateOfTurn:
+        case DataType::DepthBK:
+        case DataType::DepthBS:
+        case DataType::DepthBT:
             size = sizeof (float); break;
 
         case DataType::GPSQual:

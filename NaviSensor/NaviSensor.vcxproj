@@ -157,9 +157,7 @@
     <ClCompile Include="..\NaviSensorUI\Tools.cpp" />
     <ClCompile Include="BinQueue.cpp" />
     <ClCompile Include="DataStorage.cpp" />
-    <ClCompile Include="DBK.cpp" />
-    <ClCompile Include="DBS.cpp" />
-    <ClCompile Include="DBT.cpp" />
+    <ClCompile Include="DBc.cpp" />
     <ClCompile Include="Formatting.cpp" />
     <ClCompile Include="GGA.cpp" />
     <ClCompile Include="GLL.cpp" />
@@ -188,6 +186,7 @@
     <ClInclude Include="BinQueue.h" />
     <ClInclude Include="DataDef.h" />
     <ClInclude Include="DataStorage.h" />
+    <ClInclude Include="DBc.h" />
     <ClInclude Include="DBK.h" />
     <ClInclude Include="DBS.h" />
     <ClInclude Include="DBT.h" />
