@@ -146,7 +146,8 @@ void Sensors::Sensor::forwardProcessedData ()
         buffer.addData (param->data, param->size);
     }
 
-    transmitter.sendTo ((const char *) buffer.data (), buffer.size (), processedDataPort, "127.0.0.1");
+    if (!buffer.empty ())
+        transmitter.sendTo ((const char *) buffer.data (), buffer.size (), processedDataPort, "127.0.0.1");
 }
 
 void Sensors::Sensor::processorProc ()

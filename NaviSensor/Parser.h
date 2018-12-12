@@ -1,9 +1,15 @@
 #pragma once
 
-#include "Sentence.h"
 #include "Sensor.h"
+#include "Sentence.h"
 #include "Parameters.h"
 #include "DataDef.h"
+#include "AISTargetTable.h"
+
+namespace Sensors
+{
+    class Sensor;
+}
 
 namespace Parsers
 {
@@ -29,15 +35,16 @@ namespace Parsers
     class NmeaParsers : public SentenceParsers
     {
         public:
-            NmeaParsers ();
+            NmeaParsers (AIS::AISTargetTable *aisTargets);
             virtual ~NmeaParsers ();
 
             void addParser (NmeaParser *);
 
             bool parse (NMEA::Sentence&, Sensors::Sensor *);
-    };
 
-    extern NmeaParsers parsers;
+        protected:
+            AIS::AISTargetTable *aisTargets;
+    };
 
     bool extractFloat (Tools::Strings& fields, const size_t start, float& value);
     bool extractInteger (Tools::Strings& fields, const size_t start, int& value);
@@ -47,4 +54,6 @@ namespace Parsers
     bool extractPosition (Tools::Strings& fields, const size_t start, Data::Pos& position);
 
     double deformatCoordinate (const char *source, const int degreeFieldSize, const char hemisphereChar);
+
+    extern NmeaParsers *parsers;
 }

@@ -30,7 +30,7 @@ size_t Sensors::TextSensor::extractData ()
             if (forwardCb)
                 forwardCb (sentenceBuffer, strlen (sentenceBuffer));
 
-            if (Parsers::parsers.parse (sentence, this))
+            if (Parsers::parsers->parse (sentence, this))
             {
                 sentenceReg.update (sentence.getTypeName ());
 

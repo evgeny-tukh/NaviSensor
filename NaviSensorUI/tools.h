@@ -6,7 +6,21 @@
 
 namespace Tools
 {
-    typedef std::vector <std::string> Strings;
+    class Strings: public std::vector <std::string>
+    {
+        public:
+            const int getAsIntAt (const int);
+            const char getAsCharAt (const int);
+            const double getAsDoubleAt (const int);
+
+            const bool omitted (const int);
+
+            const char *getAt (const int);
+
+        protected:
+            const bool isIndexValid (const int);
+    };
+
     typedef std::vector <unsigned int> UIntArray;
     typedef std::vector <in_addr> AddrArray;
 

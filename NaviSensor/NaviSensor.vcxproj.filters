@@ -31,6 +31,12 @@
     <Filter Include="Файлы заголовков\Readers">
       <UniqueIdentifier>{e5bc117c-1d02-4ba6-8f1c-26ec09f77c62}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы заголовков\Storages">
+      <UniqueIdentifier>{f87d3759-e0a9-474d-b10c-26cd319764ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Storages">
+      <UniqueIdentifier>{3b256183-45bc-4745-a426-ca200ee33440}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="NaviSensor.cpp">
@@ -90,9 +96,6 @@
     <ClCompile Include="Socket.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="DataStorage.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
     <ClCompile Include="Network.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
@@ -110,6 +113,21 @@
     </ClCompile>
     <ClCompile Include="DBc.cpp">
       <Filter>Исходные файлы\Parsers</Filter>
+    </ClCompile>
+    <ClCompile Include="VDM.cpp">
+      <Filter>Исходные файлы\Parsers</Filter>
+    </ClCompile>
+    <ClCompile Include="DataStorage.cpp">
+      <Filter>Исходные файлы\Storages</Filter>
+    </ClCompile>
+    <ClCompile Include="SixBitStorage.cpp">
+      <Filter>Исходные файлы\Storages</Filter>
+    </ClCompile>
+    <ClCompile Include="AISTargetTable.cpp">
+      <Filter>Исходные файлы\Storages</Filter>
+    </ClCompile>
+    <ClCompile Include="AIS.cpp">
+      <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -176,9 +194,6 @@
     <ClInclude Include="Socket.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="DataStorage.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="Network.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
@@ -196,6 +211,21 @@
     </ClInclude>
     <ClInclude Include="DBc.h">
       <Filter>Файлы заголовков\Parsers</Filter>
+    </ClInclude>
+    <ClInclude Include="VDM.h">
+      <Filter>Файлы заголовков\Parsers</Filter>
+    </ClInclude>
+    <ClInclude Include="DataStorage.h">
+      <Filter>Файлы заголовков\Storages</Filter>
+    </ClInclude>
+    <ClInclude Include="SixBitStorage.h">
+      <Filter>Файлы заголовков\Storages</Filter>
+    </ClInclude>
+    <ClInclude Include="AISTargetTable.h">
+      <Filter>Файлы заголовков\Storages</Filter>
+    </ClInclude>
+    <ClInclude Include="AIS.h">
+      <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

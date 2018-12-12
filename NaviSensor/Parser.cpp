@@ -10,8 +10,9 @@
 #include "DBS.h"
 #include "DBT.h"
 #include "MWV.h"
+#include "VDM.h"
 
-Parsers::NmeaParsers Parsers::parsers;
+Parsers::NmeaParsers *Parsers::parsers = 0;
 
 Parsers::NmeaParser::NmeaParser (const char *type)
 {
@@ -23,8 +24,12 @@ bool Parsers::NmeaParser::parse (NMEA::Sentence& sentence, Sensors::Sensor *sens
     return false;
 }
 
-Parsers::NmeaParsers::NmeaParsers ()
+Parsers::NmeaParsers::NmeaParsers (AIS::AISTargetTable *aisTargets)
 {
+    parsers = this;
+
+    this->aisTargets = aisTargets;
+
     addParser (new GLL ());
     addParser (new GGA ());
     addParser (new VTG ());
@@ -36,6 +41,7 @@ Parsers::NmeaParsers::NmeaParsers ()
     addParser (new DBS ());
     addParser (new DBT ());
     addParser (new MWV ());
+    addParser (new VDM (aisTargets));
 }
 
 Parsers::NmeaParsers::~NmeaParsers ()

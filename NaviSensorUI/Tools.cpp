@@ -236,3 +236,33 @@ namespace Tools
         return (hexCharToInt (digits [0]) << 4) + hexCharToInt (digits [1]);
     }
 }
+
+const int Tools::Strings::getAsIntAt (const int index)
+{
+    return atoi (getAt (index));
+}
+
+const char Tools::Strings::getAsCharAt (const int index)
+{
+    return *getAt (index);
+}
+
+const double Tools::Strings::getAsDoubleAt (const int index)
+{
+    return atof (getAt (index));
+}
+
+const char *Tools::Strings::getAt (const int index)
+{
+    return isIndexValid (index) ? at (index).c_str () : "";
+}
+
+const bool Tools::Strings::omitted (const int index)
+{
+    return !*getAt (index);
+}
+
+const bool Tools::Strings::isIndexValid (const int index)
+{
+    return index >= 0 && (unsigned) index < size ();
+}
