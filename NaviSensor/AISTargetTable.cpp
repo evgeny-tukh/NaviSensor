@@ -20,18 +20,27 @@ AIS::AISTargetTable::~AISTargetTable()
     }
 }
 
-AIS::AISTarget *AIS::AISTargetTable::findTarget (const unsigned int mmsi)
+AIS::AISTarget *AIS::AISTargetTable::findTarget (const unsigned int mmsi, AISTargetRec **record)
 {
     auto pos = find (mmsi);
+
+    if (record)
+        *record = pos == end () ? 0 : & pos->second;
 
     return pos == end () ? 0 : pos->second.second;
 }
 
 AIS::AISTarget *AIS::AISTargetTable::checkAddTarget (const unsigned int mmsi)
 {
-    AIS::AISTarget *target = findTarget (mmsi);
+    AISTargetRec   *record;
+    AIS::AISTarget *target = findTarget (mmsi, & record);
 
-    if (!target)
+    if (target)
+    {
+        if (record)
+            record->first = time (0);
+    }
+    else
     {
         target = new AISTarget (mmsi);
 

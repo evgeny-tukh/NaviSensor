@@ -15,7 +15,7 @@ namespace AIS
             AISTargetTable (const time_t);
             virtual ~AISTargetTable ();
 
-            AISTarget *findTarget (const unsigned int mmsi);
+            AISTarget *findTarget (const unsigned int mmsi, AISTargetRec **record = 0);
             AISTarget *checkAddTarget (const unsigned int mmsi);
 
             inline void lock () { locker.lock (); }

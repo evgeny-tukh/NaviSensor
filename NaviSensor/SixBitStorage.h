@@ -1,6 +1,7 @@
 #pragma once
 
 #include <queue>
+#include <string>
 
 namespace AIS
 {
@@ -12,6 +13,10 @@ namespace AIS
             unsigned char getByte (const int numOfBits);
             unsigned short getShort (const int numOfBits, const bool signedValue = false, const bool lsbFirst = true);
             unsigned int getInt (const int numOfBits, const bool signedValue = false, const bool lsbFirst = true);
+
+            bool getFlag ();
+
+            std::string getString (const int numOfChars);
 
             unsigned int getData (const int numOfBits);
 

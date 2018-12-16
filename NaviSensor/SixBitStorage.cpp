@@ -11,6 +11,11 @@ void AIS::SixBitStorage::add (const char *data)
     for (char *curPtr = (char *) data; *curPtr; addChar (*(curPtr ++ )));
 }
 
+bool AIS::SixBitStorage::getFlag ()
+{
+    return getByte (1) != 0;
+}
+
 unsigned char AIS::SixBitStorage::getByte (const int numOfBits)
 {
     return (unsigned char) getData (numOfBits);
@@ -144,7 +149,22 @@ void AIS::SixBitStorage::setBit (const int bitIndex, unsigned char *buffer, cons
         buffer [byteNo] &= (0xFF - mask);
 }
 
-unsigned char AIS::asciiToSixBit (unsigned char ascii)
+std::string AIS::SixBitStorage::getString (const int numOfChars)
+{
+    std::string result;
+    char        character [2] = { 0, 0 };
+
+    for (int i = 0; i < numOfChars; ++i)
+    {
+        character [0] = (char) getByte (6);
+
+        result += character;
+    }
+
+    return result;
+}
+
+unsigned char AIS::asciiToSixBit(unsigned char ascii)
 {
     ascii += _101000B_;
 

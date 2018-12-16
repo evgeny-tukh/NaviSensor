@@ -11,6 +11,10 @@ Parsers::VDM::VDM (AIS::AISTargetTable *targets) : NmeaParser ("VDM")
     aisParsers.registerParser (2, AIS::parseBaseReport);
     aisParsers.registerParser (3, AIS::parseBaseReport);
     aisParsers.registerParser (4, AIS::parseBaseStationReport);
+    aisParsers.registerParser (5, AIS::parseStaticVoyageReport);
+    aisParsers.registerParser (18, AIS::parseStandardClassBPosReport);
+    aisParsers.registerParser (19, AIS::parseExtendedClassBPosReport);
+    aisParsers.registerParser (21, AIS::parseAidsToNavigationReport);
 }
 
 bool Parsers::VDM::parse (NMEA::Sentence& sentence, Sensors::Sensor *sensor)
@@ -100,6 +104,10 @@ void Parsers::VDM::parseData ()
 
 void Parsers::VDM::AISParsers::parseAIS (AIS::AISTarget *target, unsigned char msgType, AIS::SixBitStorage& storage)
 {
+char a[100];
+sprintf(a,"**msg %d\n",msgType);
+OutputDebugString(a);
+
     auto pos = find (msgType);
 
     if (pos != end ())

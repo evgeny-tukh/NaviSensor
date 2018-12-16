@@ -32,27 +32,36 @@ namespace AIS
 
         // Availability below
         RateOfTurn           = 8,
-        RateOfTurnOutOfScale = 16,
-        SOG                  = 32,
-        SOGOutOfScale        = 64,
-        HDG                  = 128,
-        HDGOutOfScale        = 256,
-        Lat                  = 512,
-        Lon                  = 1024
+        RateOfTurnOutOfScale = 0x10,
+        SOG                  = 0x20,
+        SOGOutOfScale        = 0x40,
+        HDG                  = 0x80,
+        HDGOutOfScale        = 0x100,
+        Lat                  = 0x200,
+        Lon                  = 0x400,
+        CallSign             = 0x800,
+        IMONumber            = 0x1000,
+        Name                 = 0x2000,
+        Destination          = 0x4000,
+        ShipCargoType        = 0x8000,
+        ETA                  = 0x10000,
+        DTE                  = 0x20000,
+        AtoN                 = 0x40000,
+        OffPosition          = 0x80000,
+        AtoNType             = 0x100000
     };
 
     #pragma pack(1)
-    struct AISTarget
+    struct AISDynamic
     {
-        unsigned int    mmsi, flags;
-        double          lat, lon;
+        double lat, lon;
 
         union
         {
             struct
             {
                 unsigned short year;
-                unsigned char month, day, hour, min, sec, psType;
+                unsigned char  month, day, hour, min, sec;
             };
 
             struct
@@ -61,23 +70,62 @@ namespace AIS
                 float           rateOfTurn, sog, hdg;
             };
         };
+    };
+
+    struct AISStatic
+    {
+        unsigned int   imoNumber;
+        char           callSign [8], name [21], destination [21];
+        unsigned char  shipCargoType, dimStbd, dimPort, psType;
+        unsigned short dimAhead, dimAstern;
+
+        union
+        {
+            time_t        eta;
+            unsigned char aToNType;
+        };
+    };
+
+    struct AISTarget
+    {
+        unsigned int mmsi, flags;
+
+        AISDynamic dynamicData;
+        AISStatic  staticData;
 
         AISTarget ()
         {
             memset (this, 0, sizeof (*this));
         }
 
-        AISTarget(const unsigned int mmsi)
+        AISTarget (const unsigned int mmsi)
         {
             memset (this, 0, sizeof (*this));
 
             this->mmsi = mmsi;
         }
+
+        inline void setFlag (const TargetFlags flag)
+        {
+            flags |= flag;
+        }
+
+        inline void clearFlag (const TargetFlags flag)
+        {
+            flags &= ~flag;
+        }
+
+        void assignString (char *addr, const size_t size, const char *source, const TargetFlags flag);
+        void assignString (char *addr, const size_t size, std::string& source , const TargetFlags flag);
     };
     #pragma pack()
 
     const char *navStatusName (const NavStatus);
 
-    void parseBaseReport (AIS::AISTarget *target, SixBitStorage& storage);
-    void parseBaseStationReport (AIS::AISTarget *target, SixBitStorage& storage);
+    void parseBaseReport (AIS::AISTarget *target, SixBitStorage& data);
+    void parseBaseStationReport (AIS::AISTarget *target, SixBitStorage& data);
+    void parseStaticVoyageReport (AIS::AISTarget *target, SixBitStorage& data);
+    void parseStandardClassBPosReport (AIS::AISTarget *target, SixBitStorage& data);
+    void parseExtendedClassBPosReport (AIS::AISTarget *target, SixBitStorage& data);
+    void parseAidsToNavigationReport (AIS::AISTarget *target, SixBitStorage& data);
 }
