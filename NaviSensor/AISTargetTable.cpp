@@ -13,7 +13,7 @@ AIS::AISTargetTable::~AISTargetTable()
     if (watchdog.joinable ())
         watchdog.join ();
 
-    for (auto & item : *this)
+    for (auto & item : container)
     {
         if (item.second.second)
             delete item.second.second;
@@ -22,12 +22,12 @@ AIS::AISTargetTable::~AISTargetTable()
 
 AIS::AISTarget *AIS::AISTargetTable::findTarget (const unsigned int mmsi, AISTargetRec **record)
 {
-    auto pos = find (mmsi);
+    auto pos = container.find (mmsi);
 
     if (record)
-        *record = pos == end () ? 0 : & pos->second;
+        *record = pos == container.end () ? 0 : & pos->second;
 
-    return pos == end () ? 0 : pos->second.second;
+    return pos == container.end () ? 0 : pos->second.second;
 }
 
 AIS::AISTarget *AIS::AISTargetTable::checkAddTarget (const unsigned int mmsi)
@@ -44,7 +44,7 @@ AIS::AISTarget *AIS::AISTargetTable::checkAddTarget (const unsigned int mmsi)
     {
         target = new AISTarget (mmsi);
 
-        insert (end (), std::pair <unsigned int, AISTargetRec> (mmsi, std::pair <time_t, AISTarget *> (time (0), target)));
+        container.insert (container.end (), std::pair <unsigned int, AISTargetRec> (mmsi, std::pair <time_t, AISTarget *> (time (0), target)));
     }
 
     return target;
@@ -58,14 +58,14 @@ void AIS::AISTargetTable::watchdogProc ()
 
         time_t now = time (0);
 
-        for (iterator pos = begin (); pos != end ();)
+        for (Container::iterator pos = container.begin (); pos != container.end ();)
         {
             if ((now - pos->second.first) > timeout)
             {
                 if (pos->second.second)
                     delete pos->second.second;
 
-                pos = erase (pos);
+                pos = container.erase (pos);
             }
             else
             {
@@ -83,4 +83,36 @@ void AIS::AISTargetTable::watchdogProcInternal (AIS::AISTargetTable *self)
 {
     if (self)
         self->watchdogProc ();
+}
+
+void AIS::AISTargetTable::extractStaticData (AISStaticDataArray& targets)
+{
+    lock ();
+
+    targets.clear ();
+
+    for (auto & pos : container)
+    {
+        AISTarget *target = pos.second.second;
+
+        targets.emplace_back (pos.first, target->flags, target->staticData);
+    }
+
+    unlock ();
+}
+
+void AIS::AISTargetTable::extractDynamicData (AISDynamicDataArray& targets)
+{
+    lock ();
+
+    targets.clear ();
+
+    for (auto & pos : container)
+    {
+        AISTarget *target = pos.second.second;
+
+        targets.emplace_back (pos.first, target->flags, target->dynamicData);
+    }
+
+    unlock ();
 }

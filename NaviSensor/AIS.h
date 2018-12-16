@@ -72,6 +72,25 @@ namespace AIS
         };
     };
 
+    struct AISDynamicData
+    {
+        unsigned int mmsi, flags;
+        AISDynamic   data;
+
+        AISDynamicData ()
+        {
+            memset (this, 0, sizeof (*this));
+        }
+
+        AISDynamicData (unsigned int mmsi, unsigned int flags, AISDynamic& source)
+        {
+            this->mmsi  = mmsi;
+            this->flags = flags;
+
+            memcpy (& data, & source, sizeof (data));
+        }
+    };
+
     struct AISStatic
     {
         unsigned int   imoNumber;
@@ -84,6 +103,25 @@ namespace AIS
             time_t        eta;
             unsigned char aToNType;
         };
+    };
+
+    struct AISStaticData
+    {
+        unsigned int mmsi, flags;
+        AISStatic    data;
+
+        AISStaticData ()
+        {
+            memset (this, 0, sizeof (*this));
+        }
+
+        AISStaticData (unsigned int mmsi, unsigned int flags, AISStatic& source)
+        {
+            this->mmsi  = mmsi;
+            this->flags = flags;
+
+            memcpy (& data, & source, sizeof (data));
+        }
     };
 
     struct AISTarget

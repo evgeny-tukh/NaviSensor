@@ -4,6 +4,7 @@
 #include <thread>
 #include "Socket.h"
 #include "Sensor.h"
+#include "AIS.h"
 
 namespace Comm
 {
@@ -15,6 +16,7 @@ namespace Comm
         SentenceStateFirstPort  = 6080,
         ProcessedDataFirstPort  = 5080,
         ProcessedDataPort       = 8001,
+        AISTargetPort           = 8002,
         MasterProcessedDataPort = 8000
     };
 
@@ -27,7 +29,9 @@ namespace Comm
         Sensors       = 5,
         RawData       = 6,
         ProcessedData = 7,
-        SentenceList  = 8
+        SentenceList  = 8,
+        AISDynamic    = 9,
+        AISStatic     = 10
     };
 
     enum CmdType
@@ -52,6 +56,16 @@ namespace Comm
     {
         unsigned char         daemonState, numOfSensors;
         Sensors::_SensorState sensorState [1];
+    };
+
+    struct AISDynData : GenericMsg
+    {
+        AIS::AISDynamicData targets [1];
+    };
+
+    struct AISStaticData : GenericMsg
+    {
+        AIS::AISStaticData targets[1];
     };
 
     struct SensorsState : GenericMsg

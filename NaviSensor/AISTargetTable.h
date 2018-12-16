@@ -3,13 +3,17 @@
 #include <map>
 #include <mutex>
 #include <thread>
+#include <vector>
 #include "AIS.h"
 
 namespace AIS
 {
     typedef std::pair <time_t, AISTarget *> AISTargetRec;
 
-    class AISTargetTable : public std::map <const unsigned int, AISTargetRec>
+    typedef std::vector <AISStaticData> AISStaticDataArray;
+    typedef std::vector <AISDynamicData> AISDynamicDataArray;
+
+    class AISTargetTable
     {
         public:
             AISTargetTable (const time_t);
@@ -21,7 +25,13 @@ namespace AIS
             inline void lock () { locker.lock (); }
             inline void unlock () { locker.unlock (); }
 
+            void extractStaticData (AISStaticDataArray&);
+            void extractDynamicData (AISDynamicDataArray&);
+
         protected:
+            typedef std::map <const unsigned int, AISTargetRec> Container;
+
+            Container   container;
             bool        active;
             time_t      timeout;
             std::mutex  locker;
