@@ -11,6 +11,12 @@ const char *Data::getDataTypeName (const Data::DataType type)
         case DataType::Position:
             result = "Pos"; break;
 
+        case DataType::Lat:
+            result = "Lat"; break;
+
+        case DataType::Lon:
+            result = "Lon"; break;
+
         case DataType::UTC:
             result = "UTC"; break;
 
@@ -392,4 +398,183 @@ void Data::DisplayedParams::checkAdd (Data::Parameter& param)
         emplace (param.type, param);
     else
         pos->second.update (param.data);
+}
+
+Data::SimpleProtoPacket *Data::SimpleProtoPacket::init (void *buffer, const unsigned short numOfItems)
+{
+    SimpleProtoPacket *packet = (SimpleProtoPacket *)buffer;
+
+    memcpy(packet->signature, NSSP_SIGNATURE, 4);
+
+    packet->numOfItems    = numOfItems;
+    packet->protoVerMajor = NSSP_MAJ_VER;
+    packet->protoVerMinor = NSSP_MIN_VER;
+
+    return packet;
+}
+
+void Data::SimpleProtoPacket::addData (const DataType dataType, const GenericData *data)
+{
+    switch (dataType)
+    {
+        case DataType::Position:
+        {
+            Data::Pos *position = (Data::Pos *) data;
+
+            addData (DataType::Lat, position->lat);
+            addData (DataType::Lon, position->lon);
+
+            break;
+        }
+
+        case DataType::Course:
+        case DataType::DepthBK:
+        case DataType::DepthBS:
+        case DataType::DepthBT:
+        case DataType::RateOfTurn:
+        case DataType::SpeedOG:
+        case DataType::SpeedTW:
+        case DataType::TrueHeading:
+        case DataType::HDOP:
+        {
+            addData (dataType, *((float *) data)); break;
+        }
+
+        case DataType::GPSQual:
+        case DataType::PosSysMode:
+        {
+            addData (dataType, *((unsigned char *) data)); break;
+        }
+
+        case Data::UTC:
+        {
+            Data::Time *utc      = (Data::Time *) data;
+            time_t      now      = time (0);
+            tm         *dateTime = gmtime (& now);
+
+            addData (dataType, (double) mktime (dateTime)); break;
+        }
+    }
+}
+
+void Data::SimpleProtoPacket::addData (const DataType dataType, const double value)
+{
+    items [numOfItems].dataType = dataType;
+    items [numOfItems].value    = value;
+
+    ++ numOfItems;
+}
+
+Data::SimpleProtoBuffer::SimpleProtoBuffer ()
+{
+    buffer = (char *) malloc (1400);
+    packet = SimpleProtoPacket::init (buffer);
+}
+
+Data::SimpleProtoBuffer::~SimpleProtoBuffer()
+{
+    if (buffer)
+        free (buffer);
+}
+
+const size_t Data::SimpleProtoBuffer::getBufferSize()
+{
+    return packet ? sizeof (*packet) + (packet->numOfItems - 1) * sizeof (packet->items [0]) : 0;
+}
+
+const size_t Data::SimpleProtoBuffer::getNumOfItems()
+{
+    return packet ? (const size_t)packet->numOfItems : 0;
+}
+
+std::string Data::SimpleProtoPacket::formatData (const size_t index)
+{
+    char buffer [50];
+
+    memset (buffer, 0, sizeof (buffer));
+
+    if (index < numOfItems)
+    {
+        Data::SimpleProtoItem& data = items [index];
+
+        switch (data.dataType)
+        {
+            case DataType::Lat:
+                Formatting::formatLat (data.value, buffer, sizeof (buffer)); break;
+
+            case DataType::Lon:
+                Formatting::formatLon (data.value, buffer, sizeof (buffer)); break;
+
+            case DataType::Course:
+            case DataType::TrueHeading:
+                sprintf (buffer, "%05.1fdeg", data.value); break;
+
+            case Data::SpeedOG:
+            case Data::SpeedTW:
+                sprintf (buffer, "%.1fkn", data.value); break;
+
+            case DataType::DepthBK:
+            case DataType::DepthBS:
+            case DataType::DepthBT:
+                sprintf (buffer, "%.1fm", data.value); break;
+
+            case DataType::RateOfTurn:
+                sprintf (buffer, "%.1fdeg/min", data.value); break;
+
+            case DataType::HDOP:
+                sprintf (buffer, "%.f1", data.value); break;
+
+            case DataType::GPSQual:
+                strncpy (buffer, getGPSQualityName ((const Data::GPSQuality) (int) (data.value + 0.1)), sizeof (buffer)); break;
+
+            case DataType::PosSysMode:
+                strncpy (buffer, getPosSysModeName ((const Data::PosSystemMode) (int) (data.value + 0.1)), sizeof (buffer)); break;
+
+            case DataType::UTC:
+                Formatting::formatUTC ((time_t) (int) (data.value + 0.1), buffer, sizeof (buffer)); break;
+        }
+    }
+
+    return std::string (buffer);
+}
+
+void Data::SimpleProtoBuffer::fromBuffer (const char *data, const size_t size)
+{
+    size_t actualSize = size < 1400 ? size : 1400;
+
+    memcpy (packet, data, actualSize);
+
+    packet->numOfItems = (unsigned short) (size - (sizeof (packet) - sizeof (packet->items [0]))) / sizeof (packet->items [0]);
+}
+
+Data::SimpleProtoItem *Data::SimpleProtoBuffer::getData (const size_t index)
+{
+    return packet && packet->numOfItems > index && index >= 0 ? packet->items + index : 0;
+}
+
+void Data::SimpleProtoBuffer::addData (const DataType dataType, const GenericData *data)
+{
+    if (packet)
+        packet->addData (dataType, data);
+}
+
+void Data::SimpleProtoBuffer::addData (const DataType dataType, const double value)
+{
+    if (packet)
+        packet->addData (dataType, value);
+}
+
+void Data::SimpleProtoBuffer::addData (const Data::GlobalParameter *param)
+{
+    if (packet)
+    {
+        const Data::ParamHeader& header = ((GlobalParameter *) param)->getHeader ();
+
+        if (std::find (processedTypes.begin(), processedTypes.end (), header.type) == processedTypes.end ())
+        {
+            packet->addData (header.type, param->data);
+
+            processedTypes.push_back (header.type);
+        }
+    }
 }

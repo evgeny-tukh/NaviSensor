@@ -15,11 +15,17 @@ namespace Data
 
     struct Time : GenericData
     {
-        byte hour, min, sec;
+        unsigned char hour, min, sec;
     };
 
     struct Pos : GenericData
     {
+        Pos (const double lat = 0.0, const double lon = 0.0)
+        {
+            this->lat = lat;
+            this->lon = lon;
+        }
+
         double lat, lon;
     };
 }

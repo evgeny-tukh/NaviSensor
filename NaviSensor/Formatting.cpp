@@ -42,6 +42,18 @@ namespace Formatting
         return buffer;
     }
 
+    char *formatUTC (const time_t timestamp, char *buffer, const size_t size)
+    {
+        Data::Time utc;
+        tm        *dateTime = gmtime (& timestamp);
+
+        utc.hour = dateTime->tm_hour;
+        utc.min  = dateTime->tm_min;
+        utc.sec  = dateTime->tm_sec;
+
+        return formatUTC (& utc, buffer, size);
+    }
+
     char *getStringFormatValue (Data::DataType type, void *data, char *buffer, const size_t size)
     {
         switch (type)

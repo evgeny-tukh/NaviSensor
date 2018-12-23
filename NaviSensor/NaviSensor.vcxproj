@@ -156,6 +156,7 @@
     <ClCompile Include="..\NaviSensorUI\SensorConfig.cpp" />
     <ClCompile Include="..\NaviSensorUI\Tools.cpp" />
     <ClCompile Include="AIS.cpp" />
+    <ClCompile Include="AISConfig.cpp" />
     <ClCompile Include="AISTargetTable.cpp" />
     <ClCompile Include="BinQueue.cpp" />
     <ClCompile Include="DataStorage.cpp" />
@@ -177,6 +178,7 @@
     <ClCompile Include="SerialReader.cpp" />
     <ClCompile Include="SixBitStorage.cpp" />
     <ClCompile Include="Socket.cpp" />
+    <ClCompile Include="TCPReader.cpp" />
     <ClCompile Include="TextSensor.cpp" />
     <ClCompile Include="UDPReader.cpp" />
     <ClCompile Include="VBW.cpp" />
@@ -188,6 +190,7 @@
     <ClInclude Include="..\NaviSensorUI\SensorConfig.h" />
     <ClInclude Include="..\NaviSensorUI\tools.h" />
     <ClInclude Include="AIS.h" />
+    <ClInclude Include="AISConfig.h" />
     <ClInclude Include="AISTargetTable.h" />
     <ClInclude Include="BinQueue.h" />
     <ClInclude Include="DataDef.h" />
@@ -211,6 +214,7 @@
     <ClInclude Include="SerialReader.h" />
     <ClInclude Include="SixBitStorage.h" />
     <ClInclude Include="Socket.h" />
+    <ClInclude Include="TCPReader.h" />
     <ClInclude Include="TextSensor.h" />
     <ClInclude Include="UDPReader.h" />
     <ClInclude Include="VBW.h" />

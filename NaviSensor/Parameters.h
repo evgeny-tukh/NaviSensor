@@ -12,17 +12,19 @@ namespace Data
         Unknown     = 0,
         UTC         = 1,
         Position    = 2,
-        HDOP        = 3,
-        GPSQual     = 4,
-        TrueHeading = 5,
-        Course      = 6,
-        SpeedOG     = 7,
-        SpeedTW     = 8,
-        RateOfTurn  = 9,
-        PosSysMode  = 10,
-        DepthBK     = 11,
-        DepthBT     = 12,
-        DepthBS     = 13,
+        Lat         = 3,
+        Lon         = 4,
+        HDOP        = 5,
+        GPSQual     = 6,
+        TrueHeading = 7,
+        Course      = 8,
+        SpeedOG     = 9,
+        SpeedTW     = 10,
+        RateOfTurn  = 11,
+        PosSysMode  = 12,
+        DepthBK     = 13,
+        DepthBT     = 14,
+        DepthBS     = 15,
 
         All         = -1
     };
@@ -240,6 +242,61 @@ namespace Data
         protected:
             time_t timeout;
     };
+
+    #pragma pack(1)
+    
+    #define NSSP_SIGNATURE      "NSSP"
+    #define NSSP_MAJ_VER        1
+    #define NSSP_MIN_VER        0
+
+    struct SimpleProtoItem
+    {
+        unsigned short dataType;
+        double         value;
+    };
+
+    struct SimpleProtoPacket
+    {
+        char            signature [4];                      // Always NSSP_SIGNATURE
+        unsigned char   protoVerMajor, protoVerMinor;
+        unsigned short  numOfItems;
+        SimpleProtoItem items [1];
+
+        static SimpleProtoPacket *init (void *buffer, const unsigned short numOfItems = 0);
+
+        std::string formatData (const size_t index);
+
+        void addData (const DataType, const GenericData *);
+        void addData (const DataType, const double);
+    };
+
+    class SimpleProtoBuffer
+    {
+        public:
+            SimpleProtoBuffer ();
+            virtual ~SimpleProtoBuffer ();
+
+            inline char *getBuffer () { return buffer; }
+            const size_t getBufferSize ();
+            const size_t getNumOfItems ();
+
+            void addData (const DataType, const GenericData *);
+            void addData (const DataType, const double);
+            void addData (const GlobalParameter *);
+
+            SimpleProtoItem *getData (const size_t index);
+
+            inline std::string formatData (const size_t index) { return packet ? packet->formatData (index) : ""; }
+
+            void fromBuffer (const char *data, const size_t size);
+
+    protected:
+            std::vector <DataType> processedTypes;
+            SimpleProtoPacket     *packet;
+            char                  *buffer;
+    };
+
+    #pragma pack()
 
     const size_t getDataSize (const DataType);
     const char *getDataTypeName (const Data::DataType);

@@ -5,6 +5,7 @@
 #include <thread>
 #include <vector>
 #include "AIS.h"
+#include "AISConfig.h"
 
 namespace AIS
 {
@@ -16,8 +17,10 @@ namespace AIS
     class AISTargetTable
     {
         public:
-            AISTargetTable (const time_t);
+            AISTargetTable (const time_t, Data::Pos *);
             virtual ~AISTargetTable ();
+
+            AISTargetRec *findMostDistantTarget (double *range);
 
             AISTarget *findTarget (const unsigned int mmsi, AISTargetRec **record = 0);
             AISTarget *checkAddTarget (const unsigned int mmsi);
@@ -28,10 +31,20 @@ namespace AIS
             void extractStaticData (AISStaticDataArray&);
             void extractDynamicData (AISDynamicDataArray&);
 
+            void loadFiltering (const char * = 0);
+
+            inline const Filtering *getFiltering () { return & filtering; }
+
+            inline const Data::Pos *getCurPosition () { return curPosition; }
+
+            inline const size_t size () { return container.size (); }
+
         protected:
             typedef std::map <const unsigned int, AISTargetRec> Container;
 
+            Data::Pos  *curPosition;
             Container   container;
+            Filtering   filtering;
             bool        active;
             time_t      timeout;
             std::mutex  locker;

@@ -1,8 +1,8 @@
 #include "Network.h"
 #include "../NaviSensorUI/tools.h"
 
-Comm::DataNode::DataNode (const unsigned int port, MsgReadCb readCb, void *param, void *param2) :
-    Socket (), worker (workerProcInternal, readCb, param, param2, this)
+Comm::DataNode::DataNode (const unsigned int port, MsgReadCb readCb, void *param, void *param2, void *param3) :
+    Socket (), worker (workerProcInternal, readCb, param, param2, param3, this)
 {
     this->active = true;
     this->port   = port;
@@ -133,7 +133,7 @@ unsigned int Comm::DataNode::sendCommand (Socket *transmitter, CmdType cmd, cons
     return seqNumber++;
 }
 
-void Comm::DataNode::workerProc (MsgReadCb readCb, void *param, void *param2)
+void Comm::DataNode::workerProc (MsgReadCb readCb, void *param, void *param2, void *param3)
 {
     char    buffer [2000];
     int     bytesReceived;
@@ -147,15 +147,15 @@ void Comm::DataNode::workerProc (MsgReadCb readCb, void *param, void *param2)
         {
             GenericMsg *msg = (GenericMsg *) buffer;
 
-            readCb ((MsgType) msg->msgType, buffer + sizeof (GenericMsg), msg->size, param, param2);
+            readCb ((MsgType) msg->msgType, buffer + sizeof (GenericMsg), msg->size, param, param2, param3);
         }
 
         Tools::sleepFor (5);
     }
 }
 
-void Comm::DataNode::workerProcInternal (MsgReadCb readCb, void *param, void *param2, DataNode *self)
+void Comm::DataNode::workerProcInternal (MsgReadCb readCb, void *param, void *param2, void *param3, DataNode *self)
 {
     if (self)
-        self->workerProc (readCb, param, param2);
+        self->workerProc (readCb, param, param2, param3);
 }

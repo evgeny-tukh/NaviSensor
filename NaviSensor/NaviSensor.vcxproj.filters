@@ -129,6 +129,15 @@
     <ClCompile Include="AIS.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="TCPReader.cpp">
+      <Filter>Исходные файлы\Readers</Filter>
+    </ClCompile>
+    <ClCompile Include="AISConfig.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClCompile>
+    <ClCompile Include="AISConfig.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\NaviSensorUI\SensorConfig.h">
@@ -226,6 +235,9 @@
     </ClInclude>
     <ClInclude Include="AIS.h">
       <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="TCPReader.h">
+      <Filter>Файлы заголовков\Readers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

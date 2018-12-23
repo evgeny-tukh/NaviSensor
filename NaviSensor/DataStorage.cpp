@@ -71,8 +71,9 @@ void Data::SensorDataStorage::watchdogProcInternal (Data::SensorDataStorage *sel
         self->watchdogProc ();
 }
 
-Data::GlobalDataStorage::GlobalDataStorage (const int paramTimeout) : watchdog (watchdogProcInternal, this)
+Data::GlobalDataStorage::GlobalDataStorage (const int paramTimeout, Data::Pos *curPosition) : watchdog (watchdogProcInternal, this)
 {
+    this->curPosition  = curPosition;
     this->paramTimeout = paramTimeout;
     this->active       = true;
 }
@@ -119,6 +120,14 @@ void Data::GlobalDataStorage::update (const int sensorID, Parameter& param)
         paramPos = params->insert (params->end (), std::pair <int, Parameter *> (sensorID, new Parameter));
 
     paramPos->second->assign (param);
+
+    if (param.type == Data::DataType::Position)
+    {
+        Data::Pos *position = (Data::Pos *) & param.data;
+
+        curPosition->lat = position->lat;
+        curPosition->lon = position->lon;
+    }
 
     locker.unlock ();
 }

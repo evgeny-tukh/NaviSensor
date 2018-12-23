@@ -9,25 +9,30 @@ void Readers::BinaryQueue::pushBuffer (ByteBuffer& data)
 {
     locker.lock ();
     
-    for (ByteBuffer::iterator ref = data.begin (); ref != data.end (); ++ ref)
-        push (*ref);
+    container.insert (container.end (), data.begin (), data.end ());
+    //for (ByteBuffer::iterator ref = data.begin (); ref != data.end (); ++ ref)
+    //    container.push_back (*ref);
 
     locker.unlock ();
 }
 
 void Readers::BinaryQueue::pushBuffer (const byte *data, const size_t size)
 {
+    char *begin = (char *) data,
+         *end   = begin + size;
+
     locker.lock ();
 
-    for (size_t i = 0; i < size; ++ i)
-        push (data [i]);
+    container.insert (container.end (), begin, end);
+    //for (size_t i = 0; i < size; ++ i)
+    //    container.push_back (data [i]);
 
     locker.unlock ();
 }
 
 size_t Readers::BinaryQueue::pull (byte *buffer, const size_t size, const bool needLock)
 {
-    size_t actualSize = this->size () >= size ? size : this->size ();
+    size_t actualSize = container.size () >= size ? size : container.size ();
 
     if (needLock)
         locker.lock ();
@@ -36,9 +41,9 @@ size_t Readers::BinaryQueue::pull (byte *buffer, const size_t size, const bool n
 
     for (size_t i = 0; i < actualSize; ++ i)
     {
-        buffer [i] = front ();
+        buffer [i] = container.front ();
 
-        pop ();
+        container.pop_front ();
     }
 
     if (needLock)
@@ -49,8 +54,8 @@ size_t Readers::BinaryQueue::pull (byte *buffer, const size_t size, const bool n
 
 size_t Readers::BinaryQueue::pull (char *buffer, const size_t bufSize, const char *finishAfterChars, const char *finishBeforeChars, const bool ignoreUnfinished)
 {
-    size_t actualSize = this->size () >= bufSize ? bufSize : this->size (),
-           queueSize  = size (),
+    size_t actualSize = container.size () >= bufSize ? bufSize : container.size (),
+           queueSize  = container.size (),
            start,
            count;
     bool   finishFound,
@@ -58,20 +63,33 @@ size_t Readers::BinaryQueue::pull (char *buffer, const size_t bufSize, const cha
 
     locker.lock ();
 
-    memset (buffer, 0, bufSize);
+    if (container.empty())
+    {
+        locker.unlock (); return 0;
+    }
+
+    //memset (buffer, 0, bufSize);
 
     for (finishFound = false, count = start = 0, noCharsPassed = true; !finishFound && count < queueSize && (count - start) < bufSize; ++ count)
     {
-        char curChar = (char) c [count];
+        char curChar = (char) container [count];
 
         if (curChar)
         {
             if (strchr (finishAfterChars, curChar) != 0)
             {
                 if (noCharsPassed)
+                {
                     ++ start;
+                }
                 else
+                {
                     finishFound = true;
+
+                    // Skip all "concluding" chars (like \n after \r)
+                    for (size_t index = count + 1; index < container.size () && strchr (finishAfterChars, container [index]) != 0; ++ index)
+                        count = index;
+                }
             }
             else if (strchr (finishBeforeChars, curChar) != 0)
             {
@@ -95,15 +113,22 @@ size_t Readers::BinaryQueue::pull (char *buffer, const size_t bufSize, const cha
 
     if (count > 0)
     {
+        size_t lastElement = count - start;
+
+        if (lastElement < bufSize)
+            buffer [lastElement] = '\0';
+
         for (size_t i = 0, j = 0; i < count; ++i)
         {
             if (start == 0)
-                buffer [j++] = (char) c.at (0);
+                buffer [j++] = (char) container.at (i);
             else
                 -- start;
 
-            pop ();
+            //container.pop_front ();
         }
+
+        container.erase (container.begin (), container.begin () + (count - 1));
     }
 
     locker.unlock ();

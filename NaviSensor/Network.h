@@ -16,6 +16,7 @@ namespace Comm
         SentenceStateFirstPort  = 6080,
         ProcessedDataFirstPort  = 5080,
         ProcessedDataPort       = 8001,
+        SimpleProtocolPort      = 8003,
         AISTargetPort           = 8002,
         MasterProcessedDataPort = 8000
     };
@@ -41,7 +42,8 @@ namespace Comm
         RawDataCtl        = 3,
         SentenceListCtl   = 4,
         ProcessedDataCtl  = 5,
-        SelectMasterParam = 6
+        SelectMasterParam = 6,
+        ReapplyAISFilter  = 7
     };
 
     #pragma pack(1)
@@ -115,9 +117,9 @@ namespace Comm
     class DataNode : public Socket
     {
         public:
-            typedef std::function <void (MsgType msgType, const char *data, const int size, void *param, void *param2)> MsgReadCb;
+            typedef std::function <void (MsgType msgType, const char *data, const int size, void *param, void *param2, void *param3)> MsgReadCb;
 
-            DataNode (const unsigned int port, MsgReadCb readCb, void *param = 0, void *param2 = 0);
+            DataNode (const unsigned int port, MsgReadCb readCb, void *param = 0, void *param2 = 0, void *param3 = 0);
             virtual ~DataNode ();
 
             void sendMessage (MsgType msgType, byte *data, const int dataSize, const unsigned int port, const char *destAddr = 0);
@@ -135,7 +137,7 @@ namespace Comm
             std::thread  worker;
             bool         active;
 
-            void workerProc (MsgReadCb readCb, void *param, void *param2);
-            static void workerProcInternal (MsgReadCb readCb, void *param, void *param2, DataNode *self);
+            void workerProc (MsgReadCb readCb, void *param, void *param2, void *param3);
+            static void workerProcInternal (MsgReadCb readCb, void *param, void *param2, void *param3, DataNode *self);
     };
 }

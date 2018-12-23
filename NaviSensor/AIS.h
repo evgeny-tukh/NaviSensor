@@ -1,9 +1,11 @@
 #pragma once
 
-#include "SixBitStorage.h"
+#include <string>
 
 namespace AIS
 {
+    class SixBitStorage;
+
     enum NavStatus
     {
         UnderWayUsingEngine       = 0,
@@ -48,7 +50,8 @@ namespace AIS
         DTE                  = 0x20000,
         AtoN                 = 0x40000,
         OffPosition          = 0x80000,
-        AtoNType             = 0x100000
+        AtoNType             = 0x100000,
+        ClassB               = 0x200000
     };
 
     #pragma pack(1)

@@ -42,6 +42,7 @@ Parsers::NmeaParsers::NmeaParsers (AIS::AISTargetTable *aisTargets)
     addParser (new DBT ());
     addParser (new MWV ());
     addParser (new VDM (aisTargets));
+    addParser (new VDO (aisTargets));
 }
 
 Parsers::NmeaParsers::~NmeaParsers ()

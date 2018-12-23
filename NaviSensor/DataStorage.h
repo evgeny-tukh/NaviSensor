@@ -62,7 +62,7 @@ namespace Data
     class GlobalDataStorage : public std::map <DataType, ParamMap *>
     {
         public:
-            GlobalDataStorage (const int paramTimeout);
+            GlobalDataStorage (const int paramTimeout, Data::Pos *curPosition);
             virtual ~GlobalDataStorage ();
 
             void update (const int sensorID, Parameter& param);
@@ -73,6 +73,7 @@ namespace Data
             void assignMasterSource (const int sensorID, Data::DataType paramType);
 
         protected:
+            Data::Pos  *curPosition;
             int         paramTimeout;
             bool        active;
             std::thread watchdog;

@@ -1,9 +1,13 @@
+#include "DataDef.h"
 #include "AISTargetTable.h"
 #include "../NaviSensorUI/tools.h"
 
-AIS::AISTargetTable::AISTargetTable (const time_t timeout) : active (true), watchdog (watchdogProcInternal, this)
+AIS::AISTargetTable::AISTargetTable (const time_t timeout, Data::Pos *curPosition) : active (true), watchdog (watchdogProcInternal, this)
 {
-    this->timeout = timeout;
+    this->curPosition = curPosition;
+    this->timeout     = timeout;
+
+    loadFiltering ();
 }
 
 AIS::AISTargetTable::~AISTargetTable()
@@ -18,6 +22,32 @@ AIS::AISTargetTable::~AISTargetTable()
         if (item.second.second)
             delete item.second.second;
     }
+}
+
+AIS::AISTargetRec *AIS::AISTargetTable::findMostDistantTarget (double *range)
+{
+    AIS::AISTargetRec  *mostDistant;
+    double              maxRange;
+    Container::iterator pos;
+
+    if (fabs (curPosition->lat) > 90.0 || fabs(curPosition->lon) > 180.0)
+        return 0;
+
+    for (pos = container.begin(), mostDistant = 0, maxRange = 0.0; pos != container.end(); ++ pos)
+    {
+        const double curRange = Tools::calcDistanceRaftly (curPosition->lat, curPosition->lon, pos->second.second->dynamicData.lat, pos->second.second->dynamicData.lon);
+
+        if (curRange > maxRange)
+        {
+            maxRange    = curRange;
+            mostDistant = & pos->second;
+        }
+    }
+
+    if (range)
+        *range = maxRange;
+
+    return mostDistant;
 }
 
 AIS::AISTarget *AIS::AISTargetTable::findTarget (const unsigned int mmsi, AISTargetRec **record)
@@ -115,4 +145,13 @@ void AIS::AISTargetTable::extractDynamicData (AISDynamicDataArray& targets)
     }
 
     unlock ();
+}
+
+void AIS::AISTargetTable::loadFiltering (const char *cfgFileName)
+{
+    if (!cfgFileName)
+        cfgFileName = "settings.cfg";//(Tools::getAppDataFolder("CAIM", "NaviSensor") + "\\settings.cfg").c_str ();
+
+    filtering.setCfgFileName (cfgFileName);
+    filtering.load ();
 }
