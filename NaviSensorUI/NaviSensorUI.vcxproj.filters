@@ -114,6 +114,12 @@
     <ClInclude Include="StaticWrapper.h">
       <Filter>Файлы заголовков\Wrappers</Filter>
     </ClInclude>
+    <ClInclude Include="AISFilteringDlg.h">
+      <Filter>Файлы заголовков\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\NaviSensor\AISConfig.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ButtonWrapper.cpp">
@@ -196,6 +202,12 @@
     </ClCompile>
     <ClCompile Include="StaticWrapper.cpp">
       <Filter>Исходные файлы\Wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="AISFilteringDlg.cpp">
+      <Filter>Исходные файлы\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\NaviSensor\AISConfig.cpp">
+      <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -6,6 +6,7 @@
 #include "Sentence.h"
 #include "SerialReader.h"
 #include "UDPReader.h"
+#include "TCPReader.h"
 #include "Parameters.h"
 #include "Socket.h"
 #include "DataStorage.h"

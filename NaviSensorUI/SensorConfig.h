@@ -28,7 +28,8 @@ namespace Sensors
     {
         Serial = 1,
         UDP    = 2,
-        File   = 3
+        TCP    = 3,
+        File   = 4
     }
     Connection;
 
@@ -123,8 +124,8 @@ namespace Sensors
 
             virtual void assign (UdpParams& source);
 
-            virtual void save();
-            virtual void load();
+            virtual void save ();
+            virtual void load ();
 
             virtual std::string getParameterString ();
 
@@ -132,6 +133,18 @@ namespace Sensors
             int     outPort;
             in_addr bind;
             in_addr dest;
+
+        protected:
+            virtual const char *getSection ();
+    };
+
+    class TcpParams : public UdpParams
+    {
+        public:
+            virtual std::string getParameterString ();
+
+        protected:
+            virtual const char *getSection ();
     };
 
     class FileParams : public Params
@@ -193,6 +206,7 @@ namespace Sensors
             Connection   connection;
             SerialParams serialParam;
             UdpParams    udpParam;
+            TcpParams    tcpParam;
             FileParams   fileParam;
     };
 

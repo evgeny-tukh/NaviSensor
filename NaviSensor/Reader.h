@@ -9,7 +9,7 @@ namespace Readers
     {
         public:
             Reader (Sensors::Config *config);
-            ~Reader ();
+            virtual ~Reader ();
 
             virtual size_t read ();
             virtual bool open ();

@@ -119,7 +119,7 @@ void Sensors::Sensor::readerProc ()
             locker.unlock ();
         }
 
-        Tools::sleepFor (config ? config->pauseBtwIter : 10);
+        Tools::sleepFor (config ? config->pauseBtwIter : 2);
     }
 }
 
@@ -175,11 +175,11 @@ void Sensors::Sensor::processorProc ()
                     }
                 }
 
-                Tools::sleepFor(5);
+                Tools::sleepFor (2);
             }
         }
 
-        Tools::sleepFor (config ? config->pauseBtwIter : 5);
+        Tools::sleepFor (config ? config->pauseBtwIter : 2);
     }
 }
 
@@ -207,7 +207,10 @@ Reader *Sensors::Sensor::createTerminal ()
             terminal = new SerialReader (& config->serialParam); break;
 
         case Connection::UDP:
-            terminal = new UDPReader (&config->udpParam); break;
+            terminal = new UDPReader (& config->udpParam); break;
+
+        case Connection::TCP:
+            terminal = new TCPReader (& config->tcpParam); break;
 
         default:
             terminal = 0;

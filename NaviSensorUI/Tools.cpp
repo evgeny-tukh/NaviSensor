@@ -8,6 +8,9 @@
 #include <Shlwapi.h>
 #include <Shlobj.h>
 
+#define EARTH_SPHERE_RAD_METER  6366707.0
+#define RAD_IN_DEG              1.74532925199432957692222222222e-2              // One degree in radians                                
+
 namespace Tools
 {
     std::string empty = "";
@@ -265,4 +268,13 @@ const bool Tools::Strings::omitted (const int index)
 const bool Tools::Strings::isIndexValid (const int index)
 {
     return index >= 0 && (unsigned) index < size ();
+}
+
+const double Tools::calcDistanceRaftly (const double lat1, const double lon1, const double lat2, const double lon2)
+{
+    static double coef = EARTH_SPHERE_RAD_METER / 1852.0;
+    double longitudinalDistance = sin (RAD_IN_DEG * fabs (lon1 - lon2)) * cos (RAD_IN_DEG * fabs (lat1)) * coef,
+           transverseDistance   = sin (RAD_IN_DEG * fabs (lat1 - lat2)) * coef;
+
+    return sqrt (transverseDistance * transverseDistance + longitudinalDistance * longitudinalDistance);
 }

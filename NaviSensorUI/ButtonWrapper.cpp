@@ -7,7 +7,7 @@ CButtonWrapper::CButtonWrapper (HWND hwndParent, UINT uiControlID) : CGenericCon
 
 BOOL CButtonWrapper::IsChecked ()
 {
-    return IsDlgButtonChecked (m_uiControlID) == BST_CHECKED;
+    return /*IsDlgButtonChecked (m_uiControlID)*/SendMessage (BM_GETCHECK ) == BST_CHECKED;
 }
 
 void CButtonWrapper::Check (const BOOL bChecked)

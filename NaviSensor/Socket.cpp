@@ -15,6 +15,49 @@ Comm::Socket::~Socket ()
     close ();
 }
 
+bool Comm::Socket::createTcp (const char *bindAddr)
+{
+    in_addr local;
+
+    local.S_un.S_addr = bindAddr? inet_addr (bindAddr) : 0;
+
+    return createTcp (local);
+}
+
+bool Comm::Socket::createTcp (const in_addr bindAddr)
+{
+    SOCKADDR_IN local;
+
+    handle = socket(AF_INET, SOCK_STREAM, 0);
+
+    local.sin_family           = AF_INET;
+    local.sin_addr.S_un.S_addr = bindAddr.S_un.S_addr;
+    local.sin_port             = 0;
+
+    return bind (handle, (sockaddr *) & local, sizeof (local)) == S_OK;
+}
+
+bool Comm::Socket::connectTo (const unsigned int port, const char *remoteAddr)
+{
+    in_addr remote;
+
+    remote.S_un.S_addr = inet_addr (remoteAddr);
+
+    return connectTo (port, remote);
+}
+
+bool Comm::Socket::connectTo (const unsigned int port, const in_addr remoteAddr)
+{
+    SOCKADDR_IN remote;
+
+    remote.sin_family           = AF_INET;
+    remote.sin_addr.S_un.S_addr = remoteAddr.S_un.S_addr;
+    remote.sin_port             = htons (port);
+
+    return connect (handle, (sockaddr *) & remote, sizeof (remote)) == S_OK;
+}
+
+
 bool Comm::Socket::create (const unsigned int port, const bool broadcast, const in_addr bindAddr)
 {
     bool result = false;
@@ -98,6 +141,11 @@ int Comm::Socket::sendTo (const char *data, const int size, const int port, cons
     dest.sin_port             = htons (port);
 
     return sendto (handle, data, size > 0 ? size : strlen (data), 0, (sockaddr *) & dest, sizeof (dest));
+}
+
+int Comm::Socket::receive (char *buffer, const int size)
+{
+    return buffer && size > 0 ? recv (handle, buffer, size, 0) : 0;
 }
 
 int Comm::Socket::receiveFrom (char *buffer, const int size, in_addr& senderAddr)

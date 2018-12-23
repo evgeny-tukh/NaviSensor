@@ -6,6 +6,52 @@
 #define _100000B_           0x20
 #define _10000000B_         0x80
 
+AIS::BitContainer::BitContainer ()
+{
+    frontPtr = backPtr = 0;
+
+    memset (data, 0, sizeof (data));
+}
+
+void AIS::BitContainer::saveState ()
+{
+    saveFrontPtr = frontPtr;
+    saveBackPtr  = backPtr;
+}
+
+void AIS::BitContainer::restoreState ()
+{
+    frontPtr = saveFrontPtr;
+    backPtr  = saveBackPtr;
+}
+
+void AIS::BitContainer::clear ()
+{
+    frontPtr = backPtr = 0;
+}
+
+void AIS::BitContainer::push_back (const unsigned char newByte)
+{
+    if (backPtr < sizeof (data))
+        data [backPtr++] = newByte;
+}
+
+void AIS::BitContainer::pop_front ()
+{
+    if (frontPtr < backPtr && frontPtr < sizeof (data))
+        ++ frontPtr;
+}
+
+const unsigned char AIS::BitContainer::front ()
+{
+    return (frontPtr < backPtr) ? data [frontPtr] : 0;
+}
+
+const size_t AIS::BitContainer::size()
+{
+    return backPtr - frontPtr;
+}
+
 void AIS::SixBitStorage::add (const char *data)
 {
     for (char *curPtr = (char *) data; *curPtr; addChar (*(curPtr ++ )));
@@ -118,7 +164,7 @@ void AIS::SixBitStorage::addChar (const char newChar)
                   mask = 0x20;
 
     for (int i = 0; i < 6; ++ i, mask >>= 1)
-        push ((byte & mask) ? 1 : 0);
+        container.push_back ((byte & mask) ? 1 : 0);
 }
 
 unsigned int AIS::SixBitStorage::getData (const int numOfBits)
@@ -128,11 +174,19 @@ unsigned int AIS::SixBitStorage::getData (const int numOfBits)
 
     for (int i = 0; i < numOfBits; ++ i)
     {
-        const unsigned char bitValue = front ();
+        if (container.size () > 0)
+        {
+            unsigned char bitValue = container.front ();
 
-        setBit (i + start, (unsigned char *) & data, bitValue);
+            setBit (i + start, (unsigned char *) & data, bitValue);
 
-        pop ();
+            container.pop_front ();
+        }
+        else
+        {
+            int iii=0;
+            ++iii;
+        }
     }
 
     return data;
@@ -156,7 +210,12 @@ std::string AIS::SixBitStorage::getString (const int numOfChars)
 
     for (int i = 0; i < numOfChars; ++i)
     {
-        character [0] = (char) getByte (6);
+        unsigned char byte = getByte (6);
+
+        if (byte && (byte < 0x20))
+            character [0] = (char) (byte + 0x40);
+        else
+            character [0] = (char) byte;
 
         result += character;
     }

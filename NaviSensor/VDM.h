@@ -34,4 +34,10 @@ namespace Parsers
 
             void parseData ();
     };
+
+    class VDO : public VDM
+    {
+        public:
+            VDO (AIS::AISTargetTable *targets);
+    };
 }

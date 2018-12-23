@@ -42,7 +42,7 @@ class SensorInfoWnd : public CDialogWrapper
         virtual LRESULT OnDestroy ();
 
         void onMessage (Comm::MsgType msgType, const char *data, const int size);
-        static void onMessageInternal (Comm::MsgType msgType, const char *data, const int size, void *self, void *extraParam);
+        static void onMessageInternal (Comm::MsgType msgType, const char *data, const int size, void *self, void *extraParam, void *extraParam2);
 
         void requestRawData (const bool send = true);
         void requestProcessedData (const bool send = true);

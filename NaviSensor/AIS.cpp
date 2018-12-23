@@ -1,4 +1,5 @@
 #include <time.h>
+#include "SixBitStorage.h"
 #include "AIS.h"
 
 const char *AIS::navStatusName (const NavStatus navStatus)
@@ -192,6 +193,8 @@ void AIS::parseBaseStationReport (AIS::AISTarget *target, SixBitStorage& data)
     AISDynamic    *dynData    = & target->dynamicData;
     AISStatic     *staticData = & target->staticData;
 
+    target->setFlag (AIS::TargetFlags::BaseStation);
+
     dynData->year  = year;
     dynData->month = month;
     dynData->day   = day;
@@ -249,6 +252,8 @@ void AIS::parseStandardClassBPosReport (AIS::AISTarget *target, SixBitStorage& d
                    spare                   = data.getByte (4);
     bool           raimFlag                = data.getFlag ();
     unsigned int   commState               = data.getInt (19);
+
+    target->setFlag (AIS::TargetFlags::ClassB);
 
     if (accuracy)
         target->setFlag (TargetFlags::PositionAccuracy);
@@ -337,6 +342,8 @@ void AIS::parseExtendedClassBPosReport (AIS::AISTarget *target, SixBitStorage& d
     unsigned char  psType        = data.getByte (4);
     bool           raimFlag      = data.getFlag ();
     bool           dte           = data.getFlag();
+
+    target->setFlag(AIS::TargetFlags::ClassB);
 
     if (dte)
         target->setFlag (TargetFlags::DTE);
@@ -612,3 +619,4 @@ void AIS::AISTarget::assignString (char *addr, const size_t size, const char *so
         strncpy (addr, source, size - 1);
     }
 }
+

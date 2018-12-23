@@ -49,6 +49,8 @@ namespace Tools
     const int hexCharToInt (const char);
     const int twoHexCharToInt (const char *digits);
 
+    const double calcDistanceRaftly (const double lat1, const double lon1, const double lat2, const double lon2);
+
     extern std::string empty;
 }
 

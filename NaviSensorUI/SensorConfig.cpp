@@ -1,9 +1,11 @@
 #include "SensorConfig.h"
+#include "SensorConfig.h"
 #include "tools.h"
 
 #define SECTION_SENSOR  "Sensor"
 #define SECTION_SERIAL  "Serial"
 #define SECTION_UDP     "UDP"
+#define SECTION_TCP     "TCP"
 #define SECTION_FILE    "File"
 
 std::string Sensors::Config::cfgFolder = Tools::getAppDataFolder ("CAIM", "NaviSensor");
@@ -13,7 +15,7 @@ Sensors::NamedOptions Sensors::parityOptions     { { Sensors::None, "None" }, { 
                                                    { Sensors::Space, "Space" } };
 Sensors::NamedOptions Sensors::sensorTypeOptions { { Sensors::Type::NMEA, "NMEA" }, { Sensors::Type::AIS, "AIS" } };
 Sensors::NamedOptions Sensors::connTypeOptions   { { Sensors::Connection::File, "File" }, { Sensors::Connection::Serial, "Serial" },
-                                                   { Sensors::Connection::UDP, "UDP" } };
+                                                   { Sensors::Connection::UDP, "UDP" }, { Sensors::Connection::TCP, "TCP" } };
 
 void Sensors::Config::setCfgFileName (const char *cfgFileName)
 {
@@ -46,7 +48,7 @@ void Sensors::Config::deleteCfgFile ()
 
 void Sensors::Config::saveData (const char *section, const char *key, std::string& value)
 {
-    WritePrivateProfileString(section, key, value.c_str (), getCfgFilePath ());
+    WritePrivateProfileString (section, key, value.c_str (), getCfgFilePath ());
 }
 
 void Sensors::Config::saveData (const char *section, const char *key, const char *value)
@@ -94,7 +96,7 @@ double Sensors::Config::loadFloatData (const char *section, const char *key, con
     
     sprintf (defBuffer, "%f", defValue);
 
-    data = loadData(section, key, defBuffer);
+    data = loadData (section, key, defBuffer);
 
     return atof (data.c_str ());
 }
@@ -167,29 +169,52 @@ void Sensors::UdpParams::assign (Sensors::UdpParams& source)
 
 void Sensors::UdpParams::load ()
 {
-    std::string bindAddr = loadData (SECTION_UDP, "BindAddr", "");
-    std::string destAddr = loadData (SECTION_UDP, "DestAddr", "255.255.255.255");
+    const char *section = getSection ();
 
-    inPort  = loadNumericData (SECTION_UDP, "InPort", 8010);
-    outPort = loadNumericData (SECTION_UDP, "OutPort", 8011);
+    std::string bindAddr = loadData (section, "BindAddr", "");
+    std::string destAddr = loadData (section, "DestAddr", "255.255.255.255");
+
+    inPort  = loadNumericData (section, "InPort", 8010);
+    outPort = loadNumericData (section, "OutPort", 8011);
 
     bind.S_un.S_addr = inet_addr (bindAddr.c_str ());
     dest.S_un.S_addr = inet_addr (destAddr.c_str ());
 }
 
+const char *Sensors::UdpParams::getSection ()
+{
+    return SECTION_UDP;
+}
+
 void Sensors::UdpParams::save ()
 {
-    saveData (SECTION_UDP, "InPort", inPort);
-    saveData (SECTION_UDP, "OutPort", outPort);
-    saveData (SECTION_UDP, "BindAddr", inet_ntoa (bind));
-    saveData (SECTION_UDP, "DestAddr", inet_ntoa (dest));
+    const char *section = getSection ();
+
+    saveData (section, "InPort", inPort);
+    saveData (section, "OutPort", outPort);
+    saveData (section, "BindAddr", inet_ntoa (bind));
+    saveData (section, "DestAddr", inet_ntoa (dest));
 }
 
 std::string Sensors::UdpParams::getParameterString ()
 {
     char buffer [200];
 
-    sprintf (buffer, "[%s] %d <=> [%s] %d", inet_ntoa (bind), inPort, inet_ntoa (dest), outPort);
+    sprintf (buffer, "[%s] %d <=> [%s] %d", bind.S_un.S_addr ? inet_ntoa(bind) : "*", inPort, inet_ntoa (dest), outPort);
+
+    return std::string (buffer);
+}
+
+const char *Sensors::TcpParams::getSection()
+{
+    return SECTION_TCP;
+}
+
+std::string Sensors::TcpParams::getParameterString ()
+{
+    char buffer[200];
+
+    sprintf (buffer, "[%s] => [%s] %d", bind.S_un.S_addr ? inet_ntoa (bind) : "*", inet_ntoa (dest), outPort);
 
     return std::string (buffer);
 }
@@ -259,6 +284,7 @@ void Sensors::SensorConfig::setCfgFileName (const char *cfgFileName)
 
     serialParam.setCfgFileName (cfgFileName);
     udpParam.setCfgFileName (cfgFileName);
+    tcpParam.setCfgFileName (cfgFileName);
     fileParam.setCfgFileName (cfgFileName);
 }
 
@@ -270,6 +296,7 @@ void Sensors::SensorConfig::assign (Sensors::SensorConfig& source)
     type         = source.type;
     serialParam  = source.serialParam;
     udpParam     = source.udpParam;
+    tcpParam     = source.tcpParam;
     pauseBtwIter = source.pauseBtwIter;
     fileParam    = source.fileParam;
 
@@ -285,6 +312,7 @@ void Sensors::SensorConfig::save ()
     
     serialParam.save ();
     udpParam.save ();
+    tcpParam.save ();
     fileParam.save ();
 }
 
@@ -297,6 +325,7 @@ void Sensors::SensorConfig::load ()
 
     serialParam.load ();
     udpParam.load ();
+    tcpParam.load ();
     fileParam.load ();
 }
 
@@ -312,8 +341,11 @@ std::string Sensors::SensorConfig::getParameterString ()
         case Sensors::Connection::Serial:
             result = serialParam.getParameterString (); break;
 
+        case Sensors::Connection::TCP:
+            result = tcpParam.getParameterString (); break;
+
         case Sensors::Connection::UDP:
-            result = udpParam.getParameterString(); break;
+            result = udpParam.getParameterString (); break;
 
         default:
             result = Tools::empty;

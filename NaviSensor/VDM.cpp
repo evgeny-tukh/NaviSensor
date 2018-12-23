@@ -1,5 +1,10 @@
 #include "VDM.h"
 
+Parsers::VDO::VDO (AIS::AISTargetTable *targets) : VDM (targets)
+{
+    memcpy (this->type, "VDO", 4);
+}
+
 Parsers::VDM::VDM (AIS::AISTargetTable *targets) : NmeaParser ("VDM")
 {
     this->targets  = targets;
@@ -32,7 +37,7 @@ bool Parsers::VDM::parse (NMEA::Sentence& sentence, Sensors::Sensor *sensor)
         {
             int seqNumber = fields.getAsIntAt (3);
 
-            if (groupCompleted)
+            if (groupCompleted || sentenceNumber == 1)
             {
                 // Start the new group; should be from 1
                 if (sentenceNumber == 1)
@@ -57,7 +62,7 @@ bool Parsers::VDM::parse (NMEA::Sentence& sentence, Sensors::Sensor *sensor)
                 if (seqNumber == curSeqNumber && lastProcessed == (sentenceNumber - 1))
                 {
                     lastProcessed  = sentenceNumber;
-                    groupCompleted = sentenceNumber < numOfSentences;
+                    groupCompleted = sentenceNumber == numOfSentences;
                 }
                 else
                 {
@@ -68,9 +73,9 @@ bool Parsers::VDM::parse (NMEA::Sentence& sentence, Sensors::Sensor *sensor)
         }
         else
         {
+            result         =
             groupCompleted = true;
             lastProcessed  = 1;
-            groupCompleted = true;
 
             data.clear ();
         }
@@ -86,7 +91,8 @@ bool Parsers::VDM::parse (NMEA::Sentence& sentence, Sensors::Sensor *sensor)
 
 void Parsers::VDM::parseData ()
 {
-    AIS::AISTarget *target;
+    AIS::AISTarget       *target;
+    const AIS::Filtering *filtering = targets->getFiltering ();
 
     unsigned char messageID = data.getByte (6);
     unsigned char repeatInd = data.getByte (2);
@@ -94,20 +100,89 @@ void Parsers::VDM::parseData ()
 
     targets->lock ();
 
-    target = targets->checkAddTarget (mmsi);
+    if (filtering->limitAmount || filtering->limitRange)
+    {
+        target = targets->findTarget (mmsi);
 
-    if (target)
-        aisParsers.parseAIS (target, messageID, data);
+        if (target)
+        {
+            // Target already exists, just update it
+            aisParsers.parseAIS (target, messageID, data);
+        }
+        else
+        {
+            double             mostDistantRange;
+            AIS::AISTargetRec *mostDistant = targets->findMostDistantTarget (& mostDistantRange);
+            AIS::AISTarget     tempTarget (mmsi);
+            const Data::Pos   *curPosition = targets->getCurPosition ();
+            double             curRange    = Tools::calcDistanceRaftly (curPosition->lat, curPosition->lon,
+                                                                        tempTarget.dynamicData.lat, tempTarget.dynamicData.lon);
+
+            if (fabs(curPosition->lat) <= 90.0 && fabs(curPosition->lon) <= 180.0)
+            {
+                mostDistant = targets->findMostDistantTarget(&mostDistantRange);
+                curRange    = Tools::calcDistanceRaftly(curPosition->lat, curPosition->lon, tempTarget.dynamicData.lat, tempTarget.dynamicData.lon);
+            }
+            else if (filtering->limitAmount && targets->size () >= (unsigned) filtering->maxAmount)
+            {
+                targets->unlock (); return;
+            }
+            else
+            {
+                mostDistant = 0;
+                curRange    = 0;
+            }
+
+            data.saveState ();
+            aisParsers.parseAIS (& tempTarget, messageID, data);
+            data.restoreState ();
+
+            if (filtering->limitRange && curRange > filtering->maxRange)
+            {
+                // Target is too faraway, ignore it
+                targets->unlock (); return;
+            }
+
+            if (filtering->limitAmount && targets->size () >= (unsigned) filtering->maxAmount)
+            {
+                if (curRange >= mostDistantRange)
+                {
+                    // Target is more distant than most distant one from existing, ignore it
+                    targets->unlock(); return;
+                }
+            }
+
+            if (targets->size() >= (unsigned) filtering->maxAmount)
+            {
+                // Replace most distant target
+                mostDistant->first        = time (0);
+                mostDistant->second->mmsi = mmsi;
+
+                aisParsers.parseAIS (mostDistant->second, messageID, data);
+            }
+            else
+            {
+                // Simple add new target
+                target = targets->checkAddTarget(mmsi);
+
+                if (target)
+                    aisParsers.parseAIS (target, messageID, data);
+            }
+        }
+    }
+    else
+    {
+        target = targets->checkAddTarget (mmsi);
+
+        if (target)
+            aisParsers.parseAIS (target, messageID, data);
+    }
 
     targets->unlock ();
 }
 
 void Parsers::VDM::AISParsers::parseAIS (AIS::AISTarget *target, unsigned char msgType, AIS::SixBitStorage& storage)
 {
-char a[100];
-sprintf(a,"**msg %d\n",msgType);
-OutputDebugString(a);
-
     auto pos = find (msgType);
 
     if (pos != end ())

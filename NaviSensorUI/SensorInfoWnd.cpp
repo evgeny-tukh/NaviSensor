@@ -51,7 +51,7 @@ LRESULT SensorInfoWnd::OnDestroy ()
     return CWindowWrapper::OnDestroy ();
 }
 
-void SensorInfoWnd::onMessageInternal (Comm::MsgType msgType, const char *data, const int size, void *param, void *param2)
+void SensorInfoWnd::onMessageInternal (Comm::MsgType msgType, const char *data, const int size, void *param, void *param2, void *param3)
 {
     if (param)
     {

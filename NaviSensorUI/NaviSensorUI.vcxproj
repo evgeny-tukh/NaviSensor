@@ -152,10 +152,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\NaviSensor\AISConfig.h" />
     <ClInclude Include="..\NaviSensor\Formatting.h" />
     <ClInclude Include="..\NaviSensor\Network.h" />
     <ClInclude Include="..\NaviSensor\Parameters.h" />
     <ClInclude Include="..\NaviSensor\Socket.h" />
+    <ClInclude Include="AISFilteringDlg.h" />
     <ClInclude Include="ButtonWrapper.h" />
     <ClInclude Include="ComboBoxWrapper.h" />
     <ClInclude Include="FilePropsDlg.h" />
@@ -183,10 +185,12 @@
     <ClInclude Include="WindowWrapper.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\NaviSensor\AISConfig.cpp" />
     <ClCompile Include="..\NaviSensor\Formatting.cpp" />
     <ClCompile Include="..\NaviSensor\Network.cpp" />
     <ClCompile Include="..\NaviSensor\Parameters.cpp" />
     <ClCompile Include="..\NaviSensor\Socket.cpp" />
+    <ClCompile Include="AISFilteringDlg.cpp" />
     <ClCompile Include="ButtonWrapper.cpp" />
     <ClCompile Include="ComboBoxWrapper.cpp" />
     <ClCompile Include="DialogWrapper.cpp" />

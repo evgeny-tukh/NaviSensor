@@ -42,6 +42,16 @@ LRESULT SensorPropsDlg::OnCommand (WPARAM wParam, LPARAM lParam)
                     break;
                 }
 
+                case Sensors::TCP:
+                {
+                    UdpConnectionPropsDlg dialog (m_hInstance, m_hwndHandle, & sensorCfg->tcpParam);
+
+                    if (dialog.Execute() == IDOK)
+                        paramString.SetText (sensorCfg->tcpParam.getParameterString ().c_str ());
+
+                    break;
+                }
+
                 case Sensors::UDP:
                 {
                     UdpConnectionPropsDlg dialog (m_hInstance, m_hwndHandle, & sensorCfg->udpParam);
@@ -84,6 +94,7 @@ BOOL SensorPropsDlg::OnInitDialog (WPARAM wParam, LPARAM lParam)
 
     connection.AddString ("Serial", Sensors::Serial);
     connection.AddString ("UDP", Sensors::UDP);
+    connection.AddString ("TCP", Sensors::TCP);
     connection.AddString ("File", Sensors::File);
 
     name.SetText (sensorCfg->getName ());
@@ -118,6 +129,9 @@ void SensorPropsDlg::showParameterString ()
 
         case Sensors::UDP:
                 paramString.SetText (sensorCfg->udpParam.getParameterString ().c_str ()); break;
+
+        case Sensors::TCP:
+                paramString.SetText (sensorCfg->tcpParam.getParameterString ().c_str ()); break;
 
         case Sensors::Serial:
             paramString.SetText (sensorCfg->serialParam.getParameterString ().c_str ()); break;
