@@ -60,7 +60,13 @@ namespace Formatting
         {
             case Data::DataType::Course:
             case Data::DataType::TrueHeading:
+            case Data::DataType::WindDirR:
+            case Data::DataType::WindDirT:
                 snprintf (buffer, size, "%05.1f°", *((float *) data)); break;
+
+            case Data::DataType::WindSpeedR:
+            case Data::DataType::WindSpeedT:
+                snprintf (buffer, size, "%.1fm/s", *((float *) data)); break;
 
             case Data::DataType::SpeedOG:
             case Data::DataType::SpeedTW:
@@ -74,6 +80,9 @@ namespace Formatting
 
             case Data::DataType::PosSysMode:
                 strncpy (buffer, Data::getPosSysModeName (*((Data::PosSystemMode *) data)), size);  break;
+
+            case Data::DataType::GyroMode:
+                strncpy (buffer, Data::getGyroModeName (*((Data::GyroModeInd *) data)), size);  break;
 
             case Data::DataType::RateOfTurn:
                 snprintf (buffer, size, "%.1f°/sec", *((float *) data)); break;

@@ -120,6 +120,9 @@
     <ClInclude Include="..\NaviSensor\AISConfig.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="..\NaviSensor\Service.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ButtonWrapper.cpp">
@@ -207,6 +210,9 @@
       <Filter>Исходные файлы\Windows</Filter>
     </ClCompile>
     <ClCompile Include="..\NaviSensor\AISConfig.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="..\NaviSensor\Service.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>

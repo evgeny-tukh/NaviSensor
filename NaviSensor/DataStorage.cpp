@@ -1,10 +1,9 @@
 #include "DataStorage.h"
 #include "../NaviSensorUI//tools.h"
 
-Data::SensorDataStorage::SensorDataStorage (const int paramTimeout) : watchdog (watchdogProcInternal, this)
+Data::SensorDataStorage::SensorDataStorage (const int paramTimeout) : active (true), watchdog (watchdogProcInternal, this)
 {
     this->paramTimeout = paramTimeout;
-    this->active       = true;
 }
 
 Data::SensorDataStorage::~SensorDataStorage ()
@@ -49,10 +48,12 @@ void Data::SensorDataStorage::extractAll (Data::ParamArray& params)
 
 void Data::SensorDataStorage::watchdogProc ()
 {
-    time_t now = time (0);
+    time_t now;
 
     while (active)
     {
+        now = time (0);
+
         for (iterator iter = begin (); iter != end (); ++ iter)
         {
             Parameter *param = iter->second;
@@ -71,11 +72,10 @@ void Data::SensorDataStorage::watchdogProcInternal (Data::SensorDataStorage *sel
         self->watchdogProc ();
 }
 
-Data::GlobalDataStorage::GlobalDataStorage (const int paramTimeout, Data::Pos *curPosition) : watchdog (watchdogProcInternal, this)
+Data::GlobalDataStorage::GlobalDataStorage (const int paramTimeout, Data::Pos *curPosition) : active (true), watchdog (watchdogProcInternal, this)
 {
     this->curPosition  = curPosition;
     this->paramTimeout = paramTimeout;
-    this->active       = true;
 }
 
 Data::GlobalDataStorage::~GlobalDataStorage ()
@@ -195,10 +195,12 @@ void Data::GlobalDataStorage::extractAll (Data::GlobalParamArray& params, Data::
 
 void Data::GlobalDataStorage::watchdogProc ()
 {
-    time_t now = time (0);
+    time_t now;
 
     while (active)
     {
+        now = time (0);
+
         locker.lock ();
 
         for (iterator typeIter = begin (); typeIter != end(); ++ typeIter)

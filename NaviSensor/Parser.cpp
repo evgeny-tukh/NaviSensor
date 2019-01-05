@@ -5,11 +5,13 @@
 #include "VBW.h"
 #include "VHW.h"
 #include "HDT.h"
+#include "THS.h"
 #include "RMC.h"
 #include "DBK.h"
 #include "DBS.h"
 #include "DBT.h"
 #include "MWV.h"
+#include "MWD.h"
 #include "VDM.h"
 
 Parsers::NmeaParsers *Parsers::parsers = 0;
@@ -36,11 +38,13 @@ Parsers::NmeaParsers::NmeaParsers (AIS::AISTargetTable *aisTargets)
     addParser (new VBW ());
     addParser (new VHW ());
     addParser (new HDT ());
+    addParser (new THS ());
     addParser (new RMC ());
     addParser (new DBK ());
     addParser (new DBS ());
     addParser (new DBT ());
     addParser (new MWV ());
+    addParser (new MWD ());
     addParser (new VDM (aisTargets));
     addParser (new VDO (aisTargets));
 }

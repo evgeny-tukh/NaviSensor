@@ -156,6 +156,7 @@
     <ClInclude Include="..\NaviSensor\Formatting.h" />
     <ClInclude Include="..\NaviSensor\Network.h" />
     <ClInclude Include="..\NaviSensor\Parameters.h" />
+    <ClInclude Include="..\NaviSensor\Service.h" />
     <ClInclude Include="..\NaviSensor\Socket.h" />
     <ClInclude Include="AISFilteringDlg.h" />
     <ClInclude Include="ButtonWrapper.h" />
@@ -189,6 +190,7 @@
     <ClCompile Include="..\NaviSensor\Formatting.cpp" />
     <ClCompile Include="..\NaviSensor\Network.cpp" />
     <ClCompile Include="..\NaviSensor\Parameters.cpp" />
+    <ClCompile Include="..\NaviSensor\Service.cpp" />
     <ClCompile Include="..\NaviSensor\Socket.cpp" />
     <ClCompile Include="AISFilteringDlg.cpp" />
     <ClCompile Include="ButtonWrapper.cpp" />

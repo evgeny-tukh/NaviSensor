@@ -4,6 +4,8 @@
 #include "Sentence.h"
 #include "Network.h"
 
+extern bool globalRun;
+
 Sensors::Sensor::Sensor (SensorConfig *config) :
     forwardCb (0),
     alive (false),
@@ -100,7 +102,7 @@ void Sensors::Sensor::readerProc ()
 {
     time_t lastDataAt = 0, now;
 
-    while (!done)
+    while (!done && globalRun)
     {
         if (running && locker.try_lock ())
         {
@@ -152,7 +154,7 @@ void Sensors::Sensor::forwardProcessedData ()
 
 void Sensors::Sensor::processorProc ()
 {
-    while (!done)
+    while (!done && globalRun)
     {
         if (running)
         {

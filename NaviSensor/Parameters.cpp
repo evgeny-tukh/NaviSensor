@@ -42,7 +42,10 @@ const char *Data::getDataTypeName (const Data::DataType type)
             result = "Quality"; break;
 
         case DataType::PosSysMode:
-            result = "ModeInd"; break;
+            result = "PSModeInd"; break;
+
+        case DataType::GyroMode:
+            result = "GyroModeInd"; break;
 
         case DataType::DepthBK:
             result = "Depth BK"; break;
@@ -52,6 +55,18 @@ const char *Data::getDataTypeName (const Data::DataType type)
 
         case DataType::DepthBT:
             result = "Depth BT"; break;
+
+        case DataType::WindDirR:
+            result = "Wind dir R"; break;
+
+        case DataType::WindDirT:
+            result = "Wind dir T"; break;
+
+        case DataType::WindSpeedR:
+            result = "Wind speed R"; break;
+
+        case DataType::WindSpeedT:
+            result = "Wind speed T"; break;
 
         default:
             result = "";
@@ -122,10 +137,15 @@ const size_t Data::getDataSize (const Data::DataType type)
         case DataType::DepthBK:
         case DataType::DepthBS:
         case DataType::DepthBT:
+        case DataType::WindDirR:
+        case DataType::WindDirT:
+        case DataType::WindSpeedR:
+        case DataType::WindSpeedT:
             size = sizeof (float); break;
 
         case DataType::GPSQual:
         case DataType::PosSysMode:
+        case DataType::GyroMode:
             size = sizeof (byte); break;
 
         default:
@@ -139,7 +159,7 @@ const char *Data::getGPSQualityName (const GPSQuality quality)
 {
     const char *result;
 
-    switch (quality)
+    switch (quality & 255)
     {
         case GPSQuality::InvalidFix:
             result = "Fix Invalid"; break;
@@ -179,7 +199,7 @@ const char *Data::getPosSysModeName (const PosSystemMode mode)
 {
     const char *result;
 
-    switch (mode)
+    switch (mode & 255)
     {
         case PosSystemMode::Autonomous:
             result = "Autonomous"; break;
@@ -206,6 +226,34 @@ const char *Data::getPosSysModeName (const PosSystemMode mode)
     return result;
 }
 
+const char *Data::getGyroModeName (const GyroModeInd mode)
+{
+    const char *result;
+
+    switch (mode & 255)
+    {
+        case GyroModeInd::AutonGyro:
+            result = "Autonomous"; break;
+
+        case GyroModeInd::DeadReck:
+            result = "Estimated"; break;
+
+        case GyroModeInd::InvalidHdg:
+            result = "Invalid"; break;
+
+        case GyroModeInd::ManualHdg:
+            result = "Manual"; break;
+
+        case GyroModeInd::SimulHdg:
+            result = "Simulator"; break;
+
+        default:
+            result = "";
+    }
+
+    return result;
+}
+
 char *Data::formatDataValueShort (const Data::Parameter& param, char *buffer, const size_t size)
 {
     switch (param.type)
@@ -220,10 +268,14 @@ char *Data::formatDataValueShort (const Data::Parameter& param, char *buffer, co
         case DataType::SpeedTW:
         case DataType::SpeedOG:
         case DataType::RateOfTurn:
+        case DataType::WindSpeedR:
+        case DataType::WindSpeedT:
             snprintf (buffer, size, "%.1f", *((float *) param.data)); break;
 
         case DataType::TrueHeading:
         case DataType::Course:
+        case DataType::WindDirR:
+        case DataType::WindDirT:
             snprintf (buffer, size, "%05.1f", *((float *) param.data)); break;
 
         case DataType::GPSQual:
@@ -284,7 +336,7 @@ void Data::Parameter::update (GenericData *source, Data::Quality sourceQuality)
 
 void Data::Parameter::assign (Parameter& source)
 {
-    if (size != source.size)
+    if (size != source.size && source.data && source.size > 0)
     {
         size = source.size;
 
@@ -436,12 +488,17 @@ void Data::SimpleProtoPacket::addData (const DataType dataType, const GenericDat
         case DataType::SpeedTW:
         case DataType::TrueHeading:
         case DataType::HDOP:
+        case DataType::WindDirR:
+        case DataType::WindDirT:
+        case DataType::WindSpeedR:
+        case DataType::WindSpeedT:
         {
             addData (dataType, *((float *) data)); break;
         }
 
         case DataType::GPSQual:
         case DataType::PosSysMode:
+        case DataType::GyroMode:
         {
             addData (dataType, *((unsigned char *) data)); break;
         }
@@ -507,11 +564,17 @@ std::string Data::SimpleProtoPacket::formatData (const size_t index)
 
             case DataType::Course:
             case DataType::TrueHeading:
+            case DataType::WindDirR:
+            case DataType::WindDirT:
                 sprintf (buffer, "%05.1fdeg", data.value); break;
 
             case Data::SpeedOG:
             case Data::SpeedTW:
                 sprintf (buffer, "%.1fkn", data.value); break;
+
+            case Data::WindSpeedR:
+            case Data::WindSpeedT:
+                sprintf (buffer, "%.1fm/s", data.value); break;
 
             case DataType::DepthBK:
             case DataType::DepthBS:
@@ -529,6 +592,9 @@ std::string Data::SimpleProtoPacket::formatData (const size_t index)
 
             case DataType::PosSysMode:
                 strncpy (buffer, getPosSysModeName ((const Data::PosSystemMode) (int) (data.value + 0.1)), sizeof (buffer)); break;
+
+            case DataType::GyroMode:
+                strncpy (buffer, getGyroModeName ((const Data::GyroModeInd) (int) (data.value + 0.1)), sizeof (buffer)); break;
 
             case DataType::UTC:
                 Formatting::formatUTC ((time_t) (int) (data.value + 0.1), buffer, sizeof (buffer)); break;

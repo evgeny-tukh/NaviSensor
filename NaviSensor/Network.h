@@ -114,7 +114,7 @@ namespace Comm
 
     #pragma pack()
 
-    class DataNode : public Socket
+    class DataNode //: public Socket
     {
         public:
             typedef std::function <void (MsgType msgType, const char *data, const int size, void *param, void *param2, void *param3)> MsgReadCb;
@@ -133,6 +133,7 @@ namespace Comm
             static unsigned int sendCommand (Socket *, CmdType cmd, const unsigned char arg1, const unsigned char arg2, const unsigned short arg3, const unsigned int port = Ports::CmdPort, const char *destAddr = 0);
 
         protected:
+            Socket       socket;
             unsigned int port;
             std::thread  worker;
             bool         active;

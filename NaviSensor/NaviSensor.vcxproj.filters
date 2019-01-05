@@ -132,11 +132,17 @@
     <ClCompile Include="TCPReader.cpp">
       <Filter>Исходные файлы\Readers</Filter>
     </ClCompile>
-    <ClCompile Include="AISConfig.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClCompile>
     <ClCompile Include="AISConfig.cpp">
       <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Service.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="THS.cpp">
+      <Filter>Исходные файлы\Parsers</Filter>
+    </ClCompile>
+    <ClCompile Include="MWD.cpp">
+      <Filter>Исходные файлы\Parsers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -238,6 +244,18 @@
     </ClInclude>
     <ClInclude Include="TCPReader.h">
       <Filter>Файлы заголовков\Readers</Filter>
+    </ClInclude>
+    <ClInclude Include="AISConfig.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Service.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="THS.h">
+      <Filter>Файлы заголовков\Parsers</Filter>
+    </ClInclude>
+    <ClInclude Include="MWD.h">
+      <Filter>Файлы заголовков\Parsers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

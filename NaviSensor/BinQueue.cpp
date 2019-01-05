@@ -72,7 +72,16 @@ size_t Readers::BinaryQueue::pull (char *buffer, const size_t bufSize, const cha
 
     for (finishFound = false, count = start = 0, noCharsPassed = true; !finishFound && count < queueSize && (count - start) < bufSize; ++ count)
     {
-        char curChar = (char) container [count];
+        char curChar;
+
+        try
+        {
+            curChar = (char) container.at (count);
+        }
+        catch (std::out_of_range)
+        {
+            curChar = '\0';
+        }
 
         if (curChar)
         {

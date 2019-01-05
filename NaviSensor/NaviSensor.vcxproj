@@ -97,6 +97,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>ws2_32.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -165,6 +166,7 @@
     <ClCompile Include="GGA.cpp" />
     <ClCompile Include="GLL.cpp" />
     <ClCompile Include="HDT.cpp" />
+    <ClCompile Include="MWD.cpp" />
     <ClCompile Include="MWV.cpp" />
     <ClCompile Include="NaviSensor.cpp" />
     <ClCompile Include="Network.cpp" />
@@ -176,10 +178,12 @@
     <ClCompile Include="Sensor.cpp" />
     <ClCompile Include="Sentence.cpp" />
     <ClCompile Include="SerialReader.cpp" />
+    <ClCompile Include="Service.cpp" />
     <ClCompile Include="SixBitStorage.cpp" />
     <ClCompile Include="Socket.cpp" />
     <ClCompile Include="TCPReader.cpp" />
     <ClCompile Include="TextSensor.cpp" />
+    <ClCompile Include="THS.cpp" />
     <ClCompile Include="UDPReader.cpp" />
     <ClCompile Include="VBW.cpp" />
     <ClCompile Include="VDM.cpp" />
@@ -203,6 +207,7 @@
     <ClInclude Include="GGA.h" />
     <ClInclude Include="GLL.h" />
     <ClInclude Include="HDT.h" />
+    <ClInclude Include="MWD.h" />
     <ClInclude Include="MWV.h" />
     <ClInclude Include="Network.h" />
     <ClInclude Include="Parameters.h" />
@@ -212,10 +217,12 @@
     <ClInclude Include="Sensor.h" />
     <ClInclude Include="Sentence.h" />
     <ClInclude Include="SerialReader.h" />
+    <ClInclude Include="Service.h" />
     <ClInclude Include="SixBitStorage.h" />
     <ClInclude Include="Socket.h" />
     <ClInclude Include="TCPReader.h" />
     <ClInclude Include="TextSensor.h" />
+    <ClInclude Include="THS.h" />
     <ClInclude Include="UDPReader.h" />
     <ClInclude Include="VBW.h" />
     <ClInclude Include="VDM.h" />

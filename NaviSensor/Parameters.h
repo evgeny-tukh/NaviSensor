@@ -25,6 +25,11 @@ namespace Data
         DepthBK     = 13,
         DepthBT     = 14,
         DepthBS     = 15,
+        GyroMode    = 16,
+        WindDirT    = 17,
+        WindDirR    = 18,
+        WindSpeedT  = 19,
+        WindSpeedR  = 20,
 
         All         = -1
     };
@@ -57,6 +62,15 @@ namespace Data
         Man          = 'M',
         Simul        = 'S',
         Invalid      = 'N'
+    };
+
+    enum GyroModeInd
+    {
+        AutonGyro  = 'A',
+        DeadReck   = 'E',
+        ManualHdg  = 'M',
+        SimulHdg   = 'S',
+        InvalidHdg = 'V'
     };
 
     #pragma pack(1)
@@ -304,6 +318,8 @@ namespace Data
 
     const char *getGPSQualityName (const GPSQuality quality);
     const char *getPosSysModeName (const PosSystemMode mode);
+    const char *getGyroModeName (const GyroModeInd mode);
+
 
     const bool alwaysSelected (const DataType);
 

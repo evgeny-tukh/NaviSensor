@@ -223,6 +223,9 @@ void SensorInfoWnd::rawDataReceiverProc ()
         {
             bytesReceived = receiver.receiveFrom (buffer, bytesAvailable > sizeof (buffer) ? sizeof (buffer) : bytesAvailable, sender);
 
+            //if (bytesReceived == 0)
+            //    break;
+
             if (bytesReceived > 0)
             {
                 buffer [bytesReceived++] = '\n';
